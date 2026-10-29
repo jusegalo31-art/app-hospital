@@ -313,91 +313,67 @@ export function getDariChallenge2Feedback(
 }
 
 /**
- * Diálogos contextuales de Dari en el Reto 3 ("Conecta y completa")
+ * Diálogos contextuales de Dari en el Reto 3 ("Verdadero o Falso")
  */
-export function getDariChallenge3Prompt(
-  groupIndex: 0 | 1,
-  activeConcept: MatchPairItem | null,
-  isGroupCompleted: boolean,
-  matchedCountInGroup = 0
+export function getDariChallenge3TrueFalsePrompt(
+  item: MatchPairItem,
+  index: number,
+  total: number
 ): DariDialogue {
-  if (isGroupCompleted) {
-    const clipId = `c3_group_done_${groupIndex}`;
-    return {
-      id: clipId,
-      event: 'challenge_transition',
-      pose: 'celebrating',
-      speakerTitle:
-        groupIndex === 0
-          ? 'Dari • ¡Primer grupo completado!'
-          : 'Dari • ¡Reto 3 completado!',
-      text:
-        groupIndex === 0
-          ? '¡Excelente! Conectaste las tres parejas de este grupo. Toca el botón de abajo para pasar al segundo grupo.'
-          : '¡Felicitaciones! Has conectado todos los conceptos de DAR y RECIBIR. Toca el botón para conocer tu calificación final.',
-      preRecordedAudioUrl: getColombianAudioPath(clipId),
-    };
-  }
-
-  if (groupIndex === 0 && matchedCountInGroup === 0 && activeConcept) {
-    const clipId = `c3_prompt_g1_${activeConcept.id}`;
+  if (index === 0) {
+    const clipId = `c3_tf_first_${item.id}`;
     return {
       id: clipId,
       event: 'challenge_enter',
       pose: 'explaining',
-      speakerTitle: 'Dari • Conecta cada concepto',
-      text: `¡Llegamos al último reto! Ahora vamos a conectar algunos conceptos con su significado. Tenemos seleccionado “${activeConcept.concept}” (${activeConcept.category}, letra ${activeConcept.letter}). Lee las descripciones abajo y toca la pareja correcta. ¡Ya casi terminamos!`,
+      speakerTitle: 'Dari • Reto 3: Verdadero o Falso',
+      text: `¡Llegamos al tercer y último reto: Verdadero o Falso! Analicemos esta afirmación sobre “${item.concept}”: “${item.statement}”. ¿Crees que es verdadero o falso?`,
       preRecordedAudioUrl: getColombianAudioPath(clipId),
     };
   }
 
-  if (activeConcept) {
-    const clipId = `c3_prompt_${activeConcept.id}`;
-    return {
-      id: clipId,
-      event: 'case_present',
-      pose: 'listening',
-      speakerTitle: `Dari • Buscando pareja para “${activeConcept.concept}”`,
-      text: `Ahora tenemos el concepto “${activeConcept.concept}” (${activeConcept.category}, letra ${activeConcept.letter}). Toca abajo la descripción que explica su significado.`,
-      preRecordedAudioUrl: getColombianAudioPath(clipId),
-    };
-  }
-
-  return DARI_CORE_DIALOGUES.c3_intro_g1;
+  const clipId = `c3_tf_prompt_${item.id}`;
+  return {
+    id: clipId,
+    event: 'case_present',
+    pose: 'listening',
+    speakerTitle: `Dari • Afirmación ${index + 1} de ${total} (${item.concept})`,
+    text: `Leamos esta afirmación sobre “${item.concept}”: “${item.statement}”. ¿Crees que es verdadero o falso?`,
+    preRecordedAudioUrl: getColombianAudioPath(clipId),
+  };
 }
 
 /**
- * Diálogo de Dari al acertar o equivocarse en una pareja del Reto 3
+ * Diálogo de Dari al acertar o equivocarse en una afirmación de Verdadero o Falso del Reto 3
  */
-export function getDariChallenge3Feedback(
-  conceptItem: MatchPairItem,
-  isMatch: boolean
+export function getDariChallenge3TrueFalseFeedback(
+  item: MatchPairItem,
+  isCorrect: boolean,
+  isLastItem = false
 ): DariDialogue {
-  if (isMatch) {
-    const clipId = `c3_ok_${conceptItem.id}`;
+  if (isCorrect) {
+    const clipId = `c3_tf_ok_${item.id}`;
     return {
       id: clipId,
-      event: 'answer_correct',
-      pose: 'happy',
-      speakerTitle: `Dari • ¡Pareja conectada! (${conceptItem.category} • ${conceptItem.letter})`,
-      text: `¡Muy bien! Has conectado “${conceptItem.concept}” con su significado. Cada vez conoces mejor tus derechos y deberes. ${conceptItem.successNote.replace(
-        '¡Conectado! ',
-        ''
-      )}`,
+      event: isLastItem ? 'challenge_transition' : 'answer_correct',
+      pose: isLastItem ? 'celebrating' : 'happy',
+      speakerTitle: isLastItem
+        ? 'Dari • ¡Reto 3 completado!'
+        : `Dari • ¡Respuesta correcta! (${item.category} • Letra ${item.letter})`,
+      text: `¡Muy bien! ${item.successNote}`,
       preRecordedAudioUrl: getColombianAudioPath(clipId),
     };
   }
 
-  const clipId = `c3_hint_${conceptItem.id}`;
+  const clipId = `c3_tf_err_${item.id}`;
   return {
     id: clipId,
-    event: 'hint_requested',
+    event: 'answer_incorrect',
     pose: 'encouraging',
-    speakerTitle: `Dari • Pista para “${conceptItem.concept}”`,
-    text: `¡No te preocupes, intentémoslo otra vez! ${conceptItem.hintOnError.replace(
-      'Pista: ',
-      ''
-    )}`,
+    speakerTitle: `Dari • Revisemos “${item.concept}”`,
+    text: `¡No te preocupes, aprendamos juntos! ${item.hintOnError} Toca el botón ${
+      item.isTrue ? 'Verdadero' : 'Falso'
+    } para continuar.`,
     preRecordedAudioUrl: getColombianAudioPath(clipId),
   };
 }

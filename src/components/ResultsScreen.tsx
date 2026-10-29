@@ -9,6 +9,7 @@ import {
   ShieldCheck,
   Volume2,
   AlertCircle,
+  Share2,
 } from 'lucide-react';
 import { ChallengeScoreDetail, DariDialogue } from '../types/game';
 import { INSTITUTIONAL_PRINCIPLES } from '../data/institutionalContent';
@@ -42,8 +43,8 @@ export const ResultsScreen: React.FC<ResultsScreenProps> = ({
 }) => {
   const isPassed = scoreDetail.totalScore >= PASSING_SCORE;
   const [showReviewPanel, setShowReviewPanel] = useState<boolean>(!isPassed);
+  const [userName, setUserName] = useState<string>('');
 
-  // Conceptos que más le costaron (o sugeridos para repasar si no hubo específicos)
   const missedPrinciples = INSTITUTIONAL_PRINCIPLES.filter((p) =>
     scoreDetail.missedPrincipleIds.includes(p.id)
   );
@@ -55,7 +56,13 @@ export const ResultsScreen: React.FC<ResultsScreenProps> = ({
     (p) => p.category === 'RECIBIR'
   );
 
-  // Diálogo contextual de Dari incluyendo la calificación real obtenida
+  const badgeTitle =
+    scoreDetail.totalScore >= 85
+      ? 'Defensor del Trato Digno ⭐'
+      : scoreDetail.totalScore >= PASSING_SCORE
+      ? 'Usuario Comprometido 🌟'
+      : 'Aprendiz Activo 🌱';
+
   const resultsDariDialogue = useMemo<DariDialogue>(() => {
     const base = isPassed
       ? DARI_CORE_DIALOGUES.results_passed_60
@@ -72,6 +79,18 @@ export const ResultsScreen: React.FC<ResultsScreenProps> = ({
   const handleRestartClick = () => {
     speech.stop();
     onPlayAgain();
+  };
+
+  const handleShareAchievement = () => {
+    const text = `¡Completé la guía educativa DAR y RECIBIR del E.S.E. Hospital Universitario Erasmo Meoz con ${scoreDetail.totalScore}/100 puntos (${badgeTitle})!`;
+    if (typeof navigator !== 'undefined' && navigator.share) {
+      navigator
+        .share({
+          title: 'Certificado DAR y RECIBIR • HUEM',
+          text,
+        })
+        .catch(() => {});
+    }
   };
 
   return (
@@ -93,7 +112,7 @@ export const ResultsScreen: React.FC<ResultsScreenProps> = ({
           />
           {isPassed && (
             <span className="celebration-sparkle" aria-hidden="true">
-              <Sparkles size={26} />
+              <Sparkles size={22} />
             </span>
           )}
         </div>
@@ -105,12 +124,12 @@ export const ResultsScreen: React.FC<ResultsScreenProps> = ({
         >
           {isPassed ? (
             <>
-              <CheckCircle2 size={18} aria-hidden="true" />
+              <CheckCircle2 size={16} aria-hidden="true" />
               <span>¡APROBADO! APRENDIZAJE COMPLETADO</span>
             </>
           ) : (
             <>
-              <AlertCircle size={18} aria-hidden="true" />
+              <AlertCircle size={16} aria-hidden="true" />
               <span>META PARA APROBAR: 60 PUNTOS</span>
             </>
           )}
@@ -129,12 +148,8 @@ export const ResultsScreen: React.FC<ResultsScreenProps> = ({
         </p>
       </div>
 
-      {/* Globo de Diálogo Contextual de Dari y Controles de Voz */}
-      <DariGuideBar
-        dialogue={resultsDariDialogue}
-        speech={speech}
-        compact
-      />
+      {/* Guía de Dari con voz colombiana */}
+      <DariGuideBar dialogue={resultsDariDialogue} speech={speech} compact />
 
       {/* Marcador de Calificación sobre 100 */}
       <div
@@ -148,7 +163,7 @@ export const ResultsScreen: React.FC<ResultsScreenProps> = ({
               isPassed ? 'score-circle-pass' : 'score-circle-retry'
             }`}
           >
-            <Award size={28} aria-hidden="true" />
+            <Award size={24} aria-hidden="true" />
             <span className="score-big-number">{scoreDetail.totalScore}</span>
             <span className="score-out-of">de 100 puntos</span>
           </div>
@@ -172,18 +187,75 @@ export const ResultsScreen: React.FC<ResultsScreenProps> = ({
               </strong>
             </li>
             <li>
-              <span>Reto 3: Conecta y completa</span>
+              <span>Reto 3: Verdadero o Falso</span>
               <strong>
                 {scoreDetail.challenge3Points} / {MAX_POINTS_CHALLENGE_3} pts
               </strong>
             </li>
           </ul>
-          <p className="score-philosophy-note">
-            * La calificación premia tus aciertos al primer intento y permite
-            corregir durante el camino para aprender sin presiones.
-          </p>
         </div>
       </div>
+
+      {/* Certificado / Insignia Oficial de Trato Digno (Diseño Móvil Intuitivo) */}
+      {isPassed && (
+        <div
+          className="certificate-card-section"
+          aria-label="Certificado personalizado de Trato Digno"
+        >
+          <div className="certificate-input-row">
+            <label htmlFor="cert-user-name" className="certificate-label">
+              Ingresa tu nombre para personalizar tu insignia:
+            </label>
+            <input
+              id="cert-user-name"
+              type="text"
+              value={userName}
+              onChange={(e) => setUserName(e.target.value)}
+              placeholder="Ej. María Gómez"
+              className="certificate-name-input"
+            />
+          </div>
+
+          <div className="certificate-diploma-box">
+            <span className="certificate-watermark" aria-hidden="true">
+              UFPS
+            </span>
+            <div className="certificate-ufps-logo-wrap">
+              <img
+                src="/recursos/logo-ufps.png"
+                alt="Logo Universidad Francisco de Paula Santander - Programa de Enfermería"
+                className="certificate-ufps-logo"
+              />
+            </div>
+            <p className="certificate-inst-top">
+              UNIVERSIDAD FRANCISCO DE PAULA SANTANDER • PROGRAMA DE ENFERMERÍA
+            </p>
+            <p className="certificate-inst-sub">
+              E.S.E. Hospital Universitario Erasmo Meoz • DAR y RECIBIR
+            </p>
+
+            <div className="certificate-recipient-block">
+              <span className="certificate-certifies">Certifica que:</span>
+              <strong className="certificate-recipient-name">
+                {userName.trim() ? userName.trim() : 'Usuario Ejemplar en Salud'}
+              </strong>
+              <p className="certificate-recipient-desc">
+                Conoce activamente sus 7 derechos (RECIBIR), practica sus 3
+                deberes (DAR) y promueve el trato digno y humanizado.
+              </p>
+            </div>
+
+            <div className="certificate-badge-pill">
+              <Award size={15} aria-hidden="true" />
+              <span>{badgeTitle}</span>
+            </div>
+
+            <span className="certificate-date-foot">
+              Fecha: {new Date().toLocaleDateString('es-CO')}
+            </span>
+          </div>
+        </div>
+      )}
 
       {/* Botones Principales según Resultado (< 60 vs >= 60) */}
       <div className="results-actions-group">
@@ -195,7 +267,7 @@ export const ResultsScreen: React.FC<ResultsScreenProps> = ({
               className="btn-primary-xl"
               id="btn-retry-game"
             >
-              <RotateCcw size={24} aria-hidden="true" />
+              <RotateCcw size={20} aria-hidden="true" />
               <span>VOLVER A INTENTAR · ¡Volver a intentarlo!</span>
             </button>
 
@@ -205,7 +277,7 @@ export const ResultsScreen: React.FC<ResultsScreenProps> = ({
               className="btn-secondary-outline"
               id="btn-review-missed"
             >
-              <BookOpen size={20} aria-hidden="true" />
+              <BookOpen size={18} aria-hidden="true" />
               <span>
                 {showReviewPanel
                   ? 'Ocultar repaso de conceptos'
@@ -221,7 +293,7 @@ export const ResultsScreen: React.FC<ResultsScreenProps> = ({
               className="btn-primary-xl"
               id="btn-play-again"
             >
-              <RotateCcw size={24} aria-hidden="true" />
+              <RotateCcw size={20} aria-hidden="true" />
               <span>JUGAR DE NUEVO</span>
             </button>
 
@@ -231,9 +303,20 @@ export const ResultsScreen: React.FC<ResultsScreenProps> = ({
               className="btn-secondary-outline"
               id="btn-review-rights"
             >
-              <BookOpen size={20} aria-hidden="true" />
+              <BookOpen size={18} aria-hidden="true" />
               <span>REPASAR MIS DERECHOS</span>
             </button>
+
+            {typeof navigator !== 'undefined' && 'share' in navigator && (
+              <button
+                type="button"
+                onClick={handleShareAchievement}
+                className="btn-secondary-outline"
+              >
+                <Share2 size={17} aria-hidden="true" />
+                <span>Compartir Logro</span>
+              </button>
+            )}
           </>
         )}
       </div>
@@ -286,8 +369,8 @@ export const ResultsScreen: React.FC<ResultsScreenProps> = ({
                     className="btn-mini-audio"
                     aria-label={`Escuchar concepto ${item.shortTitle}`}
                   >
-                    <Volume2 size={18} aria-hidden="true" />
-                    <span>Escuchar a Dari</span>
+                    <Volume2 size={15} aria-hidden="true" />
+                    <span>Escuchar</span>
                   </button>
                 </div>
                 <h3>{item.shortTitle}</h3>
@@ -299,7 +382,7 @@ export const ResultsScreen: React.FC<ResultsScreenProps> = ({
         </div>
       )}
 
-      {/* Resumen Visual Completo de los 3 Deberes (DAR) y 7 Derechos (RECIBIR) Aprendidos */}
+      {/* Resumen Visual Completo de los 3 Deberes (DAR) y 7 Derechos (RECIBIR) */}
       <div
         className="learned-summary-section"
         role="region"
@@ -309,10 +392,9 @@ export const ResultsScreen: React.FC<ResultsScreenProps> = ({
           Resumen visual: Tus 3 Deberes (DAR) y 7 Derechos (RECIBIR)
         </h2>
 
-        {/* Bloque DAR */}
         <div className="summary-category-block">
           <div className="summary-category-header header-dar">
-            <HeartHandshake size={24} aria-hidden="true" />
+            <HeartHandshake size={20} aria-hidden="true" />
             <h3>DAR — Mis 3 Deberes como Usuario</h3>
           </div>
 
@@ -323,7 +405,7 @@ export const ResultsScreen: React.FC<ResultsScreenProps> = ({
                   <span className="acrostic-badge acrostic-dar">
                     DAR · {item.letter}
                   </span>
-                  <IconBadge name={item.icon} size={22} />
+                  <IconBadge name={item.icon} size={18} />
                 </div>
                 <h4>{item.shortTitle}</h4>
                 <p className="official-quote">{item.officialText}</p>
@@ -332,10 +414,9 @@ export const ResultsScreen: React.FC<ResultsScreenProps> = ({
           </div>
         </div>
 
-        {/* Bloque RECIBIR */}
         <div className="summary-category-block">
           <div className="summary-category-header header-recibir">
-            <ShieldCheck size={24} aria-hidden="true" />
+            <ShieldCheck size={20} aria-hidden="true" />
             <h3>RECIBIR — Mis 7 Derechos como Usuario</h3>
           </div>
 
@@ -349,7 +430,7 @@ export const ResultsScreen: React.FC<ResultsScreenProps> = ({
                   <span className="acrostic-badge acrostic-recibir">
                     RECIBIR · {item.letter}
                   </span>
-                  <IconBadge name={item.icon} size={22} />
+                  <IconBadge name={item.icon} size={18} />
                 </div>
                 <h4>{item.shortTitle}</h4>
                 <p className="official-quote">{item.officialText}</p>

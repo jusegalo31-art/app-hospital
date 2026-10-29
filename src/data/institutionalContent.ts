@@ -497,11 +497,14 @@ export const CHALLENGE_3_PAIRS: MatchPairItem[] = [
     letter: 'C',
     description:
       'Decidir con información previa sobre tratamientos o estudios de investigación y poder solicitar otra opinión médica.',
+    statement:
+      'Como usuario del hospital, tengo derecho a dar mi consentimiento previo antes de un tratamiento o estudio de investigación, y también puedo solicitar una segunda opinión médica.',
+    isTrue: true,
     icon: 'file-signature',
     hintOnError:
-      'Pista: Busca la definición que habla de autorizar previamente un tratamiento o estudio y pedir otra opinión médica.',
+      'Recuerda: Autorizar previamente un tratamiento o estudio de investigación y pedir una segunda opinión médica sí es un derecho real (letra C de RECIBIR).',
     successNote:
-      '¡Conectado! El consentimiento previo y la segunda opinión son tu derecho (C de RECIBIR).',
+      '¡Es Verdadero! El consentimiento previo y la segunda opinión médica son tu derecho en la letra C de RECIBIR.',
   },
   {
     id: 'm-confidencialidad',
@@ -511,11 +514,14 @@ export const CHALLENGE_3_PAIRS: MatchPairItem[] = [
     letter: 'I',
     description:
       'Comprender las explicaciones sobre tu salud con respeto absoluto al carácter privado de tu información.',
+    statement:
+      'Mi historia clínica y mi diagnóstico son públicos, por lo que cualquier persona ajena a mi atención puede exigir verlos sin mi autorización.',
+    isTrue: false,
     icon: 'shield-check',
     hintOnError:
-      'Pista: Busca la opción que menciona explicaciones comprensibles y el respeto al carácter privado de tu información.',
+      'Piénsalo bien: Tu historia clínica es privada y reservada. La letra I de RECIBIR protege siempre tu confidencialidad.',
     successNote:
-      '¡Conectado! Tienes derecho a explicaciones comprensibles y a la reserva de tu historia clínica (I de RECIBIR).',
+      '¡Es Falso! Tienes derecho a recibir información clara y a la reserva y confidencialidad absoluta de tu historia clínica (letra I de RECIBIR).',
   },
   {
     id: 'm-acompanamiento',
@@ -525,11 +531,14 @@ export const CHALLENGE_3_PAIRS: MatchPairItem[] = [
     letter: 'B',
     description:
       'Contar con un acompañante y recibir apoyo psicosocial o religioso si lo requieres.',
+    statement:
+      'Si lo requiero durante mi atención en el hospital, tengo derecho a beneficiarme de un acompañante y a recibir apoyo psicosocial o religioso.',
+    isTrue: true,
     icon: 'users',
     hintOnError:
-      'Pista: Piensa en la compañía de un familiar y el apoyo emocional, psicosocial o espiritual.',
+      'Recuerda: Contar con un acompañante y recibir apoyo psicosocial o espiritual cuando lo requieras sí es uno de tus derechos (letra B de RECIBIR).',
     successNote:
-      '¡Conectado! El acompañamiento y el apoyo psicosocial o religioso hacen parte del cuidado humanizado (B de RECIBIR).',
+      '¡Es Verdadero! El acompañamiento y el apoyo psicosocial o religioso hacen parte del cuidado humanizado (letra B de RECIBIR).',
   },
   {
     id: 'm-puntualidad',
@@ -539,11 +548,14 @@ export const CHALLENGE_3_PAIRS: MatchPairItem[] = [
     letter: 'D',
     description:
       'Cumplir el deber de presentar documentación real y asistir puntualmente a las consultas y procedimientos.',
+    statement:
+      'Para agilizar mi turno en una consulta o procedimiento, puedo presentar el documento de identidad de un familiar o llegar a cualquier hora sin avisar.',
+    isTrue: false,
     icon: 'clock',
     hintOnError:
-      'Pista: Es un deber (D de DAR) relacionado con tus documentos de identidad y llegar a tiempo a tus citas.',
+      '¡Ten cuidado! Presentar el documento de otra persona pone en riesgo tu historia clínica. Nuestro deber (letra D de DAR) es presentar documentación real y ser puntuales.',
     successNote:
-      '¡Conectado! La puntualidad y la documentación real son el primer deber del acrónimo DAR.',
+      '¡Es Falso! Nuestro primer deber del acrónimo DAR (letra D) es presentar siempre documentación real y asistir puntualmente a las consultas y procedimientos.',
   },
   {
     id: 'm-amabilidad',
@@ -553,11 +565,14 @@ export const CHALLENGE_3_PAIRS: MatchPairItem[] = [
     letter: 'A',
     description:
       'Relacionarse con trato cordial, respeto y consideración hacia el personal y demás usuarios.',
+    statement:
+      'Es mi deber como usuario o acompañante tratar con amabilidad, consideración y respeto al personal de salud y a las demás personas en el hospital.',
+    isTrue: true,
     icon: 'heart-handshake',
     hintOnError:
-      'Pista: Es un deber (A de DAR) sobre cómo tratamos a las demás personas en el hospital.',
+      'Recuerda: Tratar con amabilidad y respeto a todas las personas en el hospital sí es un deber ciudadano fundamental (letra A de DAR).',
     successNote:
-      '¡Conectado! La amabilidad y el respeto (A de DAR) construyen un ambiente seguro y cálido para todos.',
+      '¡Es Verdadero! La amabilidad y el respeto (letra A de DAR) construyen un ambiente seguro y cálido para todos.',
   },
   {
     id: 'm-normas',
@@ -567,11 +582,14 @@ export const CHALLENGE_3_PAIRS: MatchPairItem[] = [
     letter: 'R',
     description:
       'Conocer y cumplir los reglamentos, horarios y medidas de seguridad de la institución.',
+    statement:
+      'Los horarios de visita, las normas de bioseguridad y los reglamentos del hospital son opcionales y solo deben cumplirlos los médicos y enfermeras.',
+    isTrue: false,
     icon: 'clipboard-check',
     hintOnError:
-      'Pista: Es un deber (R de DAR) enfocado en respetar los reglamentos y horarios del hospital.',
+      'Piénsalo de nuevo: Las normas y reglamentos del hospital nos protegen a todos y no son opcionales; cumplirlos es nuestro deber (letra R de DAR).',
     successNote:
-      '¡Conectado! Reconocer y cumplir las normas y reglamentos es el tercer deber del acrónimo DAR.',
+      '¡Es Falso! Reconocer y cumplir las normas y reglamentos de la institución es un deber de todos los usuarios y acompañantes (letra R de DAR).',
   },
   {
     id: 'm-atencion-integral',
@@ -581,11 +599,14 @@ export const CHALLENGE_3_PAIRS: MatchPairItem[] = [
     letter: 'R',
     description:
       'Recibir servicios de salud de calidad, oportunos y con trato prioritario y diferencial según tu condición.',
+    statement:
+      'Tengo derecho a recibir atención integral, oportuna y de calidad en salud, así como un trato prioritario y diferencial según mi condición.',
+    isTrue: true,
     icon: 'stethoscope',
     hintOnError:
-      'Pista: Busca la definición que habla de atención en salud completa, de calidad y con trato prioritario.',
+      'Recuerda: Recibir atención en salud integral, oportuna, de calidad y con enfoque diferencial sí es tu primer derecho en RECIBIR (letra R).',
     successNote:
-      '¡Conectado! La atención integral, oportuna y con enfoque diferencial encabeza tus derechos RECIBIR.',
+      '¡Es Verdadero! La atención integral, oportuna y con enfoque diferencial encabeza tus derechos en RECIBIR (letra R).',
   },
   {
     id: 'm-inconformidades',
@@ -595,11 +616,14 @@ export const CHALLENGE_3_PAIRS: MatchPairItem[] = [
     letter: 'E',
     description:
       'Manifestar peticiones, quejas, reclamos, sugerencias o felicitaciones sobre el servicio recibido.',
+    statement:
+      'Puedo expresar mis opiniones, sugerencias, quejas, reclamos o felicitaciones de manera respetuosa a través de la oficina del SIAU o los buzones del hospital.',
+    isTrue: true,
     icon: 'message-square',
     hintOnError:
-      'Pista: Busca la descripción sobre manifestar tus sugerencias, opiniones o inconformidades.',
+      'Recuerda: En el hospital sí tienes derecho a manifestar tus opiniones e inconformidades por los canales oficiales (letra E de RECIBIR).',
     successNote:
-      '¡Conectado! Expresar tus opiniones e inconformidades (E de RECIBIR) fortalece la calidad del hospital.',
+      '¡Es Verdadero! Expresar tus opiniones e inconformidades (letra E de RECIBIR) mediante el SIAU o los buzones fortalece la calidad del servicio.',
   },
   {
     id: 'm-identificacion',
@@ -609,11 +633,14 @@ export const CHALLENGE_3_PAIRS: MatchPairItem[] = [
     letter: 'I',
     description:
       'Saber el nombre de la persona que te atiende y ser llamado siempre por tu propio nombre.',
+    statement:
+      'Durante mi atención en el hospital, el personal de salud no tiene por qué decirme su nombre y debe llamarme únicamente por el número de mi cama o turno.',
+    isTrue: false,
     icon: 'user-check',
     hintOnError:
-      'Pista: Busca la opción que menciona conocer cómo se llama quien te atiende y que te llamen por tu nombre.',
+      'Piénsalo bien: Tú no eres un número de cama ni de turno. Tienes derecho a conocer el nombre de quien te atiende y a ser llamado por tu propio nombre (letra I de RECIBIR).',
     successNote:
-      '¡Conectado! Conocer el nombre del personal y ser llamado por tu nombre es parte del trato digno (I de RECIBIR).',
+      '¡Es Falso! Conocer el nombre de la persona que te atiende y ser llamado siempre por tu propio nombre es tu derecho (letra I de RECIBIR).',
   },
   {
     id: 'm-trato-humanizado',
@@ -623,11 +650,14 @@ export const CHALLENGE_3_PAIRS: MatchPairItem[] = [
     letter: 'R',
     description:
       'Ser atendido con dignidad frente a tu condición socioeconómica, cultural e ideológica, y demás derechos de ley.',
+    statement:
+      'Tengo derecho a recibir respeto y un trato humanizado y digno sin importar mi condición socioeconómica, cultural, religiosa o ideológica.',
+    isTrue: true,
     icon: 'scale',
     hintOnError:
-      'Pista: Busca la definición sobre dignidad y no discriminación por razones socioeconómicas, culturales o ideológicas.',
+      'Recuerda: El respeto y trato humanizado sin ningún tipo de discriminación sí es un derecho fundamental garantizado en la última R de RECIBIR.',
     successNote:
-      '¡Conectado! El respeto y trato humanizado sin distinción cierra con broche de oro el acrónimo RECIBIR.',
+      '¡Es Verdadero! El respeto y trato humanizado sin distinción alguna cierra con broche de oro el acrónimo RECIBIR.',
   },
 ];
 
@@ -697,22 +727,25 @@ export function generateChallenge2Scenarios(): ScenarioItem[] {
 }
 
 /**
- * Selecciona 2 grupos de 3 parejas (6 en total) para el Reto 3,
- * garantizando que se incluyan tanto deberes DAR como derechos RECIBIR
- * y los conceptos clave requeridos.
+ * Selecciona 6 afirmaciones equilibradas de Verdadero o Falso para el Reto 3
+ * (3 Verdaderas y 3 Falsas, cubriendo tanto deberes DAR como derechos RECIBIR).
  */
 export function generateChallenge3Groups(): [MatchPairItem[], MatchPairItem[]] {
-  const darPool = shuffleArray(
-    CHALLENGE_3_PAIRS.filter((p) => p.category === 'DAR')
+  const truePool = shuffleArray(
+    CHALLENGE_3_PAIRS.filter((p) => p.isTrue === true)
   );
-  const recibirPool = shuffleArray(
-    CHALLENGE_3_PAIRS.filter((p) => p.category === 'RECIBIR')
+  const falsePool = shuffleArray(
+    CHALLENGE_3_PAIRS.filter((p) => p.isTrue === false)
   );
 
-  // Grupo 1: 1 Deber DAR + 2 Derechos RECIBIR (3 conceptos manejables)
-  const group1 = shuffleArray([darPool[0], recibirPool[0], recibirPool[1]]);
-  // Grupo 2: 1 Deber DAR + 2 Derechos RECIBIR (3 conceptos manejables)
-  const group2 = shuffleArray([darPool[1], recibirPool[2], recibirPool[3]]);
+  const sixBalanced = shuffleArray([
+    truePool[0],
+    truePool[1],
+    truePool[2],
+    falsePool[0],
+    falsePool[1],
+    falsePool[2],
+  ]);
 
-  return [group1, group2];
+  return [sixBalanced.slice(0, 3), sixBalanced.slice(3, 6)];
 }

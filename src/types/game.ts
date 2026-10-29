@@ -113,6 +113,8 @@ export interface MatchPairItem {
   category: CategoryType;
   letter: string;
   description: string;
+  statement: string;
+  isTrue: boolean;
   icon: IconName;
   hintOnError: string;
   successNote: string;

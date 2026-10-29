@@ -1,11 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import {
   Volume2,
-  VolumeX,
   Square,
   RotateCcw,
-  SlidersHorizontal,
-  Loader2,
+  ChevronDown,
+  ChevronUp,
 } from 'lucide-react';
 import { DariDialogue } from '../types/game';
 import { SpeechHook } from '../hooks/useSpeech';
@@ -20,9 +19,9 @@ interface DariGuideBarProps {
 }
 
 /**
- * Componente Integrado de Acompañamiento de "Dari"
- * Muestra a Dari con su estado visual actual, su globo de diálogo contextual escrito
- * y los controles accesibles para escuchar, repetir, detener, silenciar o cambiar la voz.
+ * Barra compacta de acompañamiento de "Dari" optimizada para móvil.
+ * El cuadro de texto aparece comprimido en 1 línea por defecto con opción de expandir,
+ * para no ocupar demasiado espacio en los retos.
  */
 export const DariGuideBar: React.FC<DariGuideBarProps> = ({
   dialogue,
@@ -34,10 +33,10 @@ export const DariGuideBar: React.FC<DariGuideBarProps> = ({
   const [activeTipMode, setActiveTipMode] = useState<'main' | 'secondary'>(
     'main'
   );
-  const [showVoicePicker, setShowVoicePicker] = useState<boolean>(false);
+  // Comprimido por defecto para ahorrar espacio vertical en los retos
+  const [isExpanded, setIsExpanded] = useState<boolean>(false);
   const lastAutoSpokenIdRef = useRef<string | null>(null);
 
-  // Reiniciar modo secundario cuando cambia el diálogo principal
   useEffect(() => {
     setActiveTipMode('main');
   }, [dialogue.id]);
@@ -72,7 +71,11 @@ export const DariGuideBar: React.FC<DariGuideBarProps> = ({
   const isPlayingThis =
     speech.isSpeaking && speech.activeId === displayedDialogue.id;
 
-  const handlePlayOrRepeat = () => {
+  const handleTogglePlay = () => {
+    if (isPlayingThis) {
+      speech.stop();
+      return;
+    }
     speech.repeatCurrent(
       displayedDialogue.spokenText || displayedDialogue.text,
       displayedDialogue.id,
@@ -84,6 +87,7 @@ export const DariGuideBar: React.FC<DariGuideBarProps> = ({
     if (!secondaryDialogue) return;
     const nextMode = activeTipMode === 'main' ? 'secondary' : 'main';
     setActiveTipMode(nextMode);
+    setIsExpanded(true);
     const target = nextMode === 'secondary' ? secondaryDialogue : dialogue;
     if (!speech.isMuted) {
       speech.speak(target.spokenText || target.text, target.id, {
@@ -94,189 +98,134 @@ export const DariGuideBar: React.FC<DariGuideBarProps> = ({
 
   return (
     <aside
-      className={`dari-companion-card ${compact ? 'dari-companion-compact' : ''} ${
-        isPlayingThis ? 'dari-companion-speaking' : ''
-      } pose-border-${displayedDialogue.pose}`}
+      className={`dari-inline-guide dari-companion-card ${
+        compact ? 'dari-inline-compact' : ''
+      } ${isExpanded ? 'dari-guide-expanded' : 'dari-guide-collapsed'} ${
+        isPlayingThis ? 'dari-inline-speaking' : ''
+      } pose-tone-${displayedDialogue.pose}`}
       aria-label="Guía personal Dari"
     >
-      <div className="dari-companion-main">
-        {/* Columna del Avatar Animado Dari */}
-        <div className="dari-companion-avatar-col">
-          <DariAvatar
-            pose={displayedDialogue.pose}
-            isSpeaking={isPlayingThis}
-            size={compact ? 'sm' : 'md'}
-          />
-          <span className="dari-name-tag">Dari</span>
-        </div>
+      <button
+        type="button"
+        onClick={handleTogglePlay}
+        className="dari-avatar-trigger"
+        title={
+          isPlayingThis
+            ? 'Toca para detener la voz'
+            : 'Toca para escuchar a Dari'
+        }
+        aria-label={isPlayingThis ? 'Detener voz de Dari' : 'Escuchar a Dari'}
+      >
+        <DariAvatar
+          pose={displayedDialogue.pose}
+          isSpeaking={isPlayingThis}
+          size="sm"
+        />
+      </button>
 
-        {/* Globo de Diálogo Contextual Escrito */}
-        <div className="dari-speech-bubble" role="status" aria-live="polite">
-          <div className="dari-bubble-header">
-            <strong className="dari-speaker-title">
+      <div className="dari-inline-body" role="status" aria-live="polite">
+        <div
+          className="dari-inline-top"
+          onClick={() => setIsExpanded((prev) => !prev)}
+          role="button"
+          tabIndex={0}
+          aria-expanded={isExpanded}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              setIsExpanded((prev) => !prev);
+            }
+          }}
+        >
+          <div className="dari-inline-title-group">
+            <strong className="dari-inline-kicker">
               {displayedDialogue.speakerTitle}
             </strong>
-
             {isPlayingThis && (
-              <span className="dari-live-audio-pill">
-                <span className="voice-wave-dot" />
-                Hablando...
-              </span>
-            )}
-
-            {speech.isLoadingAudio && (
-              <span className="dari-live-audio-pill">
-                <Loader2 size={14} className="spin-icon" aria-hidden="true" />
-                Preparando voz...
-              </span>
+              <span className="dari-speaking-badge">Hablando...</span>
             )}
           </div>
 
-          <p className="dari-bubble-text" id={`dari-text-${displayedDialogue.id}`}>
-            “{displayedDialogue.text}”
-          </p>
-
-          {/* Botón opcional para alternar explicación inicial en la bienvenida */}
-          {secondaryDialogue && secondaryButtonLabel && (
-            <div className="dari-bubble-extra-row">
-              <button
-                type="button"
-                onClick={handleSwitchSecondary}
-                className="btn-dari-inline-tip"
-              >
-                {activeTipMode === 'main'
-                  ? secondaryButtonLabel
-                  : 'Volver al saludo de Dari'}
-              </button>
-            </div>
-          )}
+          <span className="btn-expand-dari-text">
+            {isExpanded ? (
+              <>
+                <span>Comprimir</span>
+                <ChevronUp size={14} aria-hidden="true" />
+              </>
+            ) : (
+              <>
+                <span>Expandir</span>
+                <ChevronDown size={14} aria-hidden="true" />
+              </>
+            )}
+          </span>
         </div>
-      </div>
 
-      {/* Controles Accesibles de Voz (Escuchar/Repetir, Detener, Activar/Desactivar Audio, Cambiar Voz) */}
-      <div
-        className="dari-voice-controls-row"
-        role="group"
-        aria-label="Controles de voz de Dari"
-      >
-        {/* Botón Principal: Escuchar / Repetir mensaje */}
-        <button
-          type="button"
-          onClick={handlePlayOrRepeat}
-          className={`btn-voice btn-dari-listen ${
-            isPlayingThis ? 'btn-dari-listen-active' : ''
+        <p
+          onClick={() => setIsExpanded((prev) => !prev)}
+          className={`dari-inline-text dari-bubble-text ${
+            isExpanded ? '' : 'dari-text-compressed'
           }`}
-          aria-label={
-            isPlayingThis
-              ? 'Repetir mensaje de Dari desde el principio'
-              : 'Escuchar o repetir mensaje de Dari en voz alta'
-          }
-        >
-          {isPlayingThis ? (
-            <>
-              <RotateCcw size={20} aria-hidden="true" />
-              <span>Repetir mensaje</span>
-            </>
-          ) : (
-            <>
-              <Volume2 size={21} aria-hidden="true" />
-              <span>Escuchar a Dari</span>
-            </>
-          )}
-        </button>
-
-        {/* Botón Detener Voz (visible cuando Dari está hablando) */}
-        {speech.isSpeaking && (
-          <button
-            type="button"
-            onClick={speech.stop}
-            className="btn-dari-stop"
-            aria-label="Detener la voz de Dari"
-          >
-            <Square size={19} fill="currentColor" aria-hidden="true" />
-            <span>Detener</span>
-          </button>
-        )}
-
-        {/* Control Activar / Desactivar Audio */}
-        <button
-          type="button"
-          onClick={speech.toggleMute}
-          className={`btn-dari-mute ${speech.isMuted ? 'btn-dari-muted' : ''}`}
-          aria-pressed={speech.isMuted}
-          aria-label={
-            speech.isMuted
-              ? 'Audio desactivado. Toca para activar la voz de Dari'
-              : 'Audio activado. Toca para silenciar la voz de Dari'
-          }
+          id={`dari-text-${displayedDialogue.id}`}
           title={
-            speech.isMuted ? 'Activar voz de Dari' : 'Silenciar voz de Dari'
+            isExpanded
+              ? 'Toca para comprimir el texto'
+              : 'Toca para expandir el texto completo'
           }
         >
-          {speech.isMuted ? (
-            <>
-              <VolumeX size={19} aria-hidden="true" />
-              <span>Sin sonido</span>
-            </>
-          ) : (
-            <>
-              <Volume2 size={19} aria-hidden="true" />
-              <span>Voz activa</span>
-            </>
-          )}
-        </button>
+          {displayedDialogue.text}
+        </p>
 
-        {/* Botón para cambiar la voz en español si el dispositivo ofrece varias alternativas */}
-        {speech.availableVoices.length > 1 && (
+        {isExpanded && secondaryDialogue && secondaryButtonLabel && (
           <button
             type="button"
-            onClick={() => setShowVoicePicker((prev) => !prev)}
-            className="btn-dari-voice-settings"
-            aria-expanded={showVoicePicker}
-            aria-label="Seleccionar voz en español disponible en tu dispositivo"
-            title="Cambiar voz"
+            onClick={handleSwitchSecondary}
+            className="btn-dari-inline-tip"
           >
-            <SlidersHorizontal size={18} aria-hidden="true" />
-            <span>Voz</span>
+            {activeTipMode === 'main'
+              ? secondaryButtonLabel
+              : 'Volver al saludo de Dari'}
           </button>
         )}
       </div>
 
-      {/* Selector desplegable de voces con acento colombiano integradas y voces del dispositivo */}
-      {showVoicePicker && speech.availableVoices.length > 1 && (
-        <div className="dari-voice-picker-panel">
-          <label htmlFor="dari-voice-select" className="voice-picker-label">
-            Acento y voz de Dari ({speech.voiceLabel}):
-          </label>
-          <select
-            id="dari-voice-select"
-            value={speech.selectedVoiceURI}
-            onChange={(e) => {
-              const newUri = e.target.value;
-              speech.setSelectedVoiceURI(newUri);
-              if (!speech.isMuted) {
-                speech.repeatCurrent(
-                  displayedDialogue.spokenText || displayedDialogue.text,
-                  displayedDialogue.id,
-                  { preRecordedAudioUrl: displayedDialogue.preRecordedAudioUrl }
-                );
-              }
-            }}
-            className="voice-picker-select"
-          >
-            {speech.availableVoices.map((v) => (
-              <option key={v.voiceURI} value={v.voiceURI}>
-                {v.name} ({v.lang})
-                {v.isColombian && !v.name.includes('Colombiana')
-                  ? ' • Colombia'
-                  : ''}
-                {v.isNaturalOrNeural && !v.name.includes('Humana')
-                  ? ' ★ Natural'
-                  : ''}
-              </option>
-            ))}
-          </select>
-        </div>
+      <button
+        type="button"
+        onClick={handleTogglePlay}
+        className={`btn-dari-audio-icon ${isPlayingThis ? 'audio-active' : ''}`}
+        title={isPlayingThis ? 'Detener narración' : 'Escuchar mensaje de Dari'}
+        aria-label={
+          isPlayingThis
+            ? 'Detener narración de Dari'
+            : 'Escuchar mensaje de Dari en voz alta'
+        }
+      >
+        {isPlayingThis ? (
+          <Square size={15} fill="currentColor" aria-hidden="true" />
+        ) : (
+          <Volume2 size={17} aria-hidden="true" />
+        )}
+        <span className="sr-only">
+          {isPlayingThis ? 'Detener' : 'Escuchar a Dari'}
+        </span>
+      </button>
+
+      {isPlayingThis && (
+        <button
+          type="button"
+          onClick={() =>
+            speech.repeatCurrent(
+              displayedDialogue.spokenText || displayedDialogue.text,
+              displayedDialogue.id,
+              { preRecordedAudioUrl: displayedDialogue.preRecordedAudioUrl }
+            )
+          }
+          className="btn-dari-audio-icon"
+          title="Repetir desde el inicio"
+          aria-label="Repetir mensaje de Dari"
+        >
+          <RotateCcw size={15} aria-hidden="true" />
+        </button>
       )}
     </aside>
   );

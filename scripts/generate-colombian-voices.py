@@ -304,80 +304,100 @@ CHALLENGE_3_PAIRS = [
         "concept": "Consentimiento y 2.ª opinión",
         "category": "RECIBIR",
         "letter": "C",
-        "hintOnError": "Pista: Busca la definición que habla de autorizar previamente un tratamiento o estudio y pedir otra opinión médica.",
-        "successNote": "¡Conectado! El consentimiento previo y la segunda opinión son tu derecho (C de RECIBIR).",
+        "statement": "Como usuario del hospital, tengo derecho a dar mi consentimiento previo antes de un tratamiento o estudio de investigación, y también puedo solicitar una segunda opinión médica.",
+        "isTrue": True,
+        "hintOnError": "Recuerda: Autorizar previamente un tratamiento o estudio de investigación y pedir una segunda opinión médica sí es un derecho real (letra C de RECIBIR).",
+        "successNote": "¡Es Verdadero! El consentimiento previo y la segunda opinión médica son tu derecho en la letra C de RECIBIR.",
     },
     {
         "id": "m-confidencialidad",
         "concept": "Información clara y confidencial",
         "category": "RECIBIR",
         "letter": "I",
-        "hintOnError": "Pista: Busca la opción que menciona explicaciones comprensibles y el respeto al carácter privado de tu información.",
-        "successNote": "¡Conectado! Tienes derecho a explicaciones comprensibles y a la reserva de tu historia clínica (I de RECIBIR).",
+        "statement": "Mi historia clínica y mi diagnóstico son públicos, por lo que cualquier persona ajena a mi atención puede exigir verlos sin mi autorización.",
+        "isTrue": False,
+        "hintOnError": "Piénsalo bien: Tu historia clínica es privada y reservada. La letra I de RECIBIR protege siempre tu confidencialidad.",
+        "successNote": "¡Es Falso! Tienes derecho a recibir información clara y a la reserva y confidencialidad absoluta de tu historia clínica (letra I de RECIBIR).",
     },
     {
         "id": "m-acompanamiento",
         "concept": "Beneficio de acompañamiento",
         "category": "RECIBIR",
         "letter": "B",
-        "hintOnError": "Pista: Piensa en la compañía de un familiar y el apoyo emocional, psicosocial o espiritual.",
-        "successNote": "¡Conectado! El acompañamiento y el apoyo psicosocial o religioso hacen parte del cuidado humanizado (B de RECIBIR).",
+        "statement": "Si lo requiero durante mi atención en el hospital, tengo derecho a beneficiarme de un acompañante y a recibir apoyo psicosocial o religioso.",
+        "isTrue": True,
+        "hintOnError": "Recuerda: Contar con un acompañante y recibir apoyo psicosocial o espiritual cuando lo requieras sí es uno de tus derechos (letra B de RECIBIR).",
+        "successNote": "¡Es Verdadero! El acompañamiento y el apoyo psicosocial o religioso hacen parte del cuidado humanizado (letra B de RECIBIR).",
     },
     {
         "id": "m-puntualidad",
         "concept": "Documentación y puntualidad",
         "category": "DAR",
         "letter": "D",
-        "hintOnError": "Pista: Es un deber (D de DAR) relacionado con tus documentos de identidad y llegar a tiempo a tus citas.",
-        "successNote": "¡Conectado! La puntualidad y la documentación real son el primer deber del acrónimo DAR.",
+        "statement": "Para agilizar mi turno en una consulta o procedimiento, puedo presentar el documento de identidad de un familiar o llegar a cualquier hora sin avisar.",
+        "isTrue": False,
+        "hintOnError": "¡Ten cuidado! Presentar el documento de otra persona pone en riesgo tu historia clínica. Nuestro deber (letra D de DAR) es presentar documentación real y ser puntuales.",
+        "successNote": "¡Es Falso! Nuestro primer deber del acrónimo DAR (letra D) es presentar siempre documentación real y asistir puntualmente a las consultas y procedimientos.",
     },
     {
         "id": "m-amabilidad",
         "concept": "Amabilidad y respeto",
         "category": "DAR",
         "letter": "A",
-        "hintOnError": "Pista: Es un deber (A de DAR) sobre cómo tratamos a las demás personas en el hospital.",
-        "successNote": "¡Conectado! La amabilidad y el respeto (A de DAR) construyen un ambiente seguro y cálido para todos.",
+        "statement": "Es mi deber como usuario o acompañante tratar con amabilidad, consideración y respeto al personal de salud y a las demás personas en el hospital.",
+        "isTrue": True,
+        "hintOnError": "Recuerda: Tratar con amabilidad y respeto a todas las personas en el hospital sí es un deber ciudadano fundamental (letra A de DAR).",
+        "successNote": "¡Es Verdadero! La amabilidad y el respeto (letra A de DAR) construyen un ambiente seguro y cálido para todos.",
     },
     {
         "id": "m-normas",
         "concept": "Reconocimiento de las normas",
         "category": "DAR",
         "letter": "R",
-        "hintOnError": "Pista: Es un deber (R de DAR) enfocado en respetar los reglamentos y horarios del hospital.",
-        "successNote": "¡Conectado! Reconocer y cumplir las normas y reglamentos es el tercer deber del acrónimo DAR.",
+        "statement": "Los horarios de visita, las normas de bioseguridad y los reglamentos del hospital son opcionales y solo deben cumplirlos los médicos y enfermeras.",
+        "isTrue": False,
+        "hintOnError": "Piénsalo de nuevo: Las normas y reglamentos del hospital nos protegen a todos y no son opcionales; cumplirlos es nuestro deber (letra R de DAR).",
+        "successNote": "¡Es Falso! Reconocer y cumplir las normas y reglamentos de la institución es un deber de todos los usuarios y acompañantes (letra R de DAR).",
     },
     {
         "id": "m-atencion-integral",
         "concept": "Atención integral y oportuna",
         "category": "RECIBIR",
         "letter": "R",
-        "hintOnError": "Pista: Busca la definición que habla de atención en salud completa, de calidad y con trato prioritario.",
-        "successNote": "¡Conectado! La atención integral, oportuna y con enfoque diferencial encabeza tus derechos RECIBIR.",
+        "statement": "Tengo derecho a recibir atención integral, oportuna y de calidad en salud, así como un trato prioritario y diferencial según mi condición.",
+        "isTrue": True,
+        "hintOnError": "Recuerda: Recibir atención en salud integral, oportuna, de calidad y con enfoque diferencial sí es tu primer derecho en RECIBIR (letra R).",
+        "successNote": "¡Es Verdadero! La atención integral, oportuna y con enfoque diferencial encabeza tus derechos en RECIBIR (letra R).",
     },
     {
         "id": "m-inconformidades",
         "concept": "Expresar opiniones",
         "category": "RECIBIR",
         "letter": "E",
-        "hintOnError": "Pista: Busca la descripción sobre manifestar tus sugerencias, opiniones o inconformidades.",
-        "successNote": "¡Conectado! Expresar tus opiniones e inconformidades (E de RECIBIR) fortalece la calidad del hospital.",
+        "statement": "Puedo expresar mis opiniones, sugerencias, quejas, reclamos o felicitaciones de manera respetuosa a través de la oficina del SIAU o los buzones del hospital.",
+        "isTrue": True,
+        "hintOnError": "Recuerda: En el hospital sí tienes derecho a manifestar tus opiniones e inconformidades por los canales oficiales (letra E de RECIBIR).",
+        "successNote": "¡Es Verdadero! Expresar tus opiniones e inconformidades (letra E de RECIBIR) mediante el SIAU o los buzones fortalece la calidad del servicio.",
     },
     {
         "id": "m-identificacion",
         "concept": "Identificación por mi nombre",
         "category": "RECIBIR",
         "letter": "I",
-        "hintOnError": "Pista: Busca la opción que menciona conocer cómo se llama quien te atiende y que te llamen por tu nombre.",
-        "successNote": "¡Conectado! Conocer el nombre del personal y ser llamado por tu nombre es parte del trato digno (I de RECIBIR).",
+        "statement": "Durante mi atención en el hospital, el personal de salud no tiene por qué decirme su nombre y debe llamarme únicamente por el número de mi cama o turno.",
+        "isTrue": False,
+        "hintOnError": "Piénsalo bien: Tú no eres un número de cama ni de turno. Tienes derecho a conocer el nombre de quien te atiende y a ser llamado por tu propio nombre (letra I de RECIBIR).",
+        "successNote": "¡Es Falso! Conocer el nombre de la persona que te atiende y ser llamado siempre por tu propio nombre es tu derecho (letra I de RECIBIR).",
     },
     {
         "id": "m-trato-humanizado",
         "concept": "Respeto y trato humanizado",
         "category": "RECIBIR",
         "letter": "R",
-        "hintOnError": "Pista: Busca la definición sobre dignidad y no discriminación por razones socioeconómicas, culturales o ideológicas.",
-        "successNote": "¡Conectado! El respeto y trato humanizado sin distinción cierra con broche de oro el acrónimo RECIBIR.",
+        "statement": "Tengo derecho a recibir respeto y un trato humanizado y digno sin importar mi condición socioeconómica, cultural, religiosa o ideológica.",
+        "isTrue": True,
+        "hintOnError": "Recuerda: El respeto y trato humanizado sin ningún tipo de discriminación sí es un derecho fundamental garantizado en la última R de RECIBIR.",
+        "successNote": "¡Es Verdadero! El respeto y trato humanizado sin distinción alguna cierra con broche de oro el acrónimo RECIBIR.",
     },
 ]
 
@@ -512,25 +532,20 @@ def build_all_dialogues() -> dict[str, str]:
 
     for pair in CHALLENGE_3_PAIRS:
         pid = pair["id"]
-        items[f"c3_prompt_g1_{pid}"] = (
-            f"¡Llegamos al último reto! Ahora vamos a conectar algunos conceptos con su significado. "
-            f"Tenemos seleccionado “{pair['concept']}” ({pair['category']}, letra {pair['letter']}). "
-            "Lee las descripciones abajo y toca la pareja correcta. ¡Ya casi terminamos!"
+        items[f"c3_tf_first_{pid}"] = (
+            f"¡Llegamos al tercer y último reto: Verdadero o Falso! "
+            f"Analicemos esta afirmación sobre “{pair['concept']}”: “{pair['statement']}”. "
+            "¿Crees que es verdadero o falso?"
         )
-        items[f"c3_prompt_{pid}"] = (
-            f"Ahora tenemos el concepto “{pair['concept']}” ({pair['category']}, letra {pair['letter']}). "
-            "Toca abajo la descripción que explica su significado."
+        items[f"c3_tf_prompt_{pid}"] = (
+            f"Leamos esta afirmación sobre “{pair['concept']}”: “{pair['statement']}”. "
+            "¿Crees que es verdadero o falso?"
         )
-
-        clean_note = pair["successNote"].replace("¡Conectado! ", "")
-        items[f"c3_ok_{pid}"] = (
-            f"¡Muy bien! Has conectado “{pair['concept']}” con su significado. "
-            f"Cada vez conoces mejor tus derechos y deberes. {clean_note}"
-        )
-
-        clean_hint = pair["hintOnError"].replace("Pista: ", "")
-        items[f"c3_hint_{pid}"] = (
-            f"¡No te preocupes, intentémoslo otra vez! {clean_hint}"
+        items[f"c3_tf_ok_{pid}"] = f"¡Muy bien! {pair['successNote']}"
+        target_btn = "Verdadero" if pair["isTrue"] else "Falso"
+        items[f"c3_tf_err_{pid}"] = (
+            f"¡No te preocupes, aprendamos juntos! {pair['hintOnError']} "
+            f"Toca el botón {target_btn} para continuar."
         )
 
     # 5. Institutional Principles (Cartilla y Repaso)
@@ -540,6 +555,44 @@ def build_all_dialogues() -> dict[str, str]:
         items[f"principle_{pid}"] = (
             f"{kind} con la letra {p['letter']} de {p['category']}: {p['shortTitle']}. "
             f"{p['officialText']} {p['citizenExplanation']}"
+        )
+
+    # 6. Nuevos diálogos del diseño móvil intuitivo (Inicio, FAQs de Dari, lectura de tarjetas y trivia)
+    items["home_dari_welcome"] = (
+        "¡Hola! Soy Dari, tu guía de Trato Digno en el Hospital Erasmo Meoz. "
+        "Hoy descubriremos juntos tus derechos en salud y los deberes que nos permiten convivir con respeto y calidez."
+    )
+
+    faqs = [
+        (
+            "faq_0",
+            "En Urgencias no se atiende por orden de llegada, sino por la gravedad de la persona según el sistema nacional de Triage. Un dolor severo de pecho, asfixia o pérdida del conocimiento siempre tendrán prioridad vital sobre casos que pueden esperar sin riesgo de muerte. Comprender esto salva vidas.",
+        ),
+        (
+            "faq_1",
+            "¡Totalmente! Es tu derecho fundamental. Si el médico o enfermera usa palabras médicas complejas que no entiendes, puedes decir con tranquilidad: Doctor, por favor explíqueme en palabras sencillas qué tengo y cómo debo cuidarme. El equipo de salud tiene el deber de hacértelo entender.",
+        ),
+        (
+            "faq_2",
+            "Sí. Tienes derecho a pedir otro concepto profesional ante diagnósticos de alta complejidad o cirugías mayores, y ningún tratamiento experimental o quirúrgico puede realizarse sin tu consentimiento informado previo firmado.",
+        ),
+        (
+            "faq_3",
+            "Los niños, adultos mayores, personas con discapacidad o mujeres en trabajo de parto tienen derecho prioritario a contar con un acompañante permanente según las condiciones de bioseguridad del servicio. Además, tienes derecho a recibir apoyo psicológico o espiritual de tu fe.",
+        ),
+        (
+            "faq_4",
+            "Presentar tu documento real garantiza que no se confunda tu historia clínica con la de otra persona, protegiendo tus exámenes y prescripciones. La puntualidad permite que el tiempo asignado a tu salud se aproveche al máximo sin retrasar a otros pacientes.",
+        ),
+    ]
+    for fid, ftext in faqs:
+        items[fid] = ftext
+
+    for card in CHALLENGE_1_BANK:
+        cid = card["id"]
+        items[f"c1_read_{cid}"] = (
+            f"Situación a clasificar: {card['text']} "
+            "Decide si es un deber que cumplimos, Dar, o un derecho que nos protege, Recibir."
         )
 
     return items

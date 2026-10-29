@@ -36,3 +36,7 @@ tests/screenshots/
 .env
 .env.*
 !.env.example
+
+# AI Studio
+.aistudio/
+

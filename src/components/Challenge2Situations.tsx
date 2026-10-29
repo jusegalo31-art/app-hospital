@@ -14,7 +14,6 @@ import {
   getDariChallenge2Feedback,
 } from '../data/dariDialogues';
 import { DariGuideBar } from './DariGuideBar';
-import { ScenarioIllustration, GuideCharacterAvatar } from './Illustrations';
 
 interface Challenge2SituationsProps {
   scenarios: ScenarioItem[];
@@ -51,7 +50,6 @@ export const Challenge2Situations: React.FC<Challenge2SituationsProps> = ({
     currentScenario && solvedMap[currentScenario.id]
   );
 
-  // Diálogo contextual de Dari según la situación o respuesta actual
   const activeDariDialogue = useMemo<DariDialogue>(() => {
     if (selectedFeedback) {
       return selectedFeedback.dariDialogue;
@@ -146,49 +144,26 @@ export const Challenge2Situations: React.FC<Challenge2SituationsProps> = ({
       className="screen-card challenge-screen"
       aria-labelledby="c2-heading"
     >
-      {/* Encabezado del reto */}
-      <div className="challenge-header">
-        <div className="challenge-badge-row">
-          <span className="challenge-step-tag">RETO 2 DE 3</span>
-          <span className="challenge-counter-tag">
-            Situación {currentIndex + 1} de {scenarios.length}
-          </span>
-        </div>
-
-        <h1 id="c2-heading" className="challenge-title">
-          ¿Qué harías en esta situación?
-        </h1>
-
-        <p className="challenge-learning-goal">
-          <strong>Qué aprenderás:</strong> A aplicar tus derechos (
-          <strong>RECIBIR</strong>) y deberes (<strong>DAR</strong>) en
-          situaciones cotidianas dentro del hospital.
-        </p>
+      {/* Cabecera limpia del caso clínico */}
+      <div className="c1-top-progress-row">
+        <span id="c2-heading" className="c1-card-step-text">
+          Situación {currentIndex + 1} de {scenarios.length} •{' '}
+          {currentScenario.categoryBadge}
+        </span>
+        <span className="c1-progress-pct-text">
+          {Math.round(((currentIndex + (isCurrentSolved ? 1 : 0)) / scenarios.length) * 100)}%
+        </span>
       </div>
 
-      {/* Avatar Guía Personal "Dari" con Diálogo Contextual de la Situación */}
-      <DariGuideBar
-        dialogue={activeDariDialogue}
-        speech={speech}
-        compact
-      />
+      {/* Guía compacta de Dari con voz humana colombiana */}
+      <DariGuideBar dialogue={activeDariDialogue} speech={speech} compact />
 
-      {/* Tarjeta de Escena Ilustrada */}
+      {/* Tarjeta de Situación */}
       <article className="scenario-card" aria-labelledby="scenario-case-title">
-        <div className="scenario-illustration-box">
-          <ScenarioIllustration type={currentScenario.illustrationType} />
-        </div>
-
-        <div className="scenario-body">
-          <h2 id="scenario-case-title" className="scenario-title">
-            {currentScenario.title}
-          </h2>
-          <p className="scenario-description">
-            {currentScenario.situationText}
-          </p>
-          <div className="scenario-question-box">
-            <strong>{currentScenario.question}</strong>
-          </div>
+        <span className="scenario-kicker">{currentScenario.title}</span>
+        <p className="scenario-description">{currentScenario.situationText}</p>
+        <div className="scenario-question-box">
+          <strong id="scenario-case-title">{currentScenario.question}</strong>
         </div>
       </article>
 
@@ -216,28 +191,21 @@ export const Challenge2Situations: React.FC<Challenge2SituationsProps> = ({
             >
               <span className="option-letter-badge" aria-hidden="true">
                 {isWinner ? (
-                  <CheckCircle2 size={22} />
+                  <CheckCircle2 size={18} />
                 ) : isTriedWrong ? (
-                  <XCircle size={22} />
+                  <XCircle size={18} />
                 ) : (
                   optionLetter
                 )}
               </span>
 
               <span className="option-text-content">{option.text}</span>
-
-              {isWinner && (
-                <span className="option-status-tag tag-correct">¡Correcto!</span>
-              )}
-              {isTriedWrong && (
-                <span className="option-status-tag tag-wrong">Revisada</span>
-              )}
             </button>
           );
         })}
       </div>
 
-      {/* Retroalimentación Progresiva y Botón de Avance */}
+      {/* Lección clave y retroalimentación */}
       {selectedFeedback && (
         <div
           className={`feedback-banner ${
@@ -248,28 +216,18 @@ export const Challenge2Situations: React.FC<Challenge2SituationsProps> = ({
           role="alert"
           aria-live="assertive"
         >
-          <div className="feedback-avatar-col">
-            <GuideCharacterAvatar
-              pose={selectedFeedback.dariDialogue.pose}
-              isSpeaking={
-                speech.isSpeaking &&
-                speech.activeId === selectedFeedback.dariDialogue.id
-              }
-            />
-          </div>
-
           <div className="feedback-content-col">
             <div className="feedback-title-row">
               {selectedFeedback.type === 'correct' ? (
                 <>
-                  <CheckCircle2 size={22} aria-hidden="true" />
+                  <CheckCircle2 size={20} aria-hidden="true" />
                   <strong>
                     ¡Excelente decisión! ({currentScenario.categoryBadge})
                   </strong>
                 </>
               ) : (
                 <>
-                  <HelpCircle size={22} aria-hidden="true" />
+                  <HelpCircle size={20} aria-hidden="true" />
                   <strong>¡Revisemos esta opción juntos!</strong>
                 </>
               )}
@@ -279,7 +237,7 @@ export const Challenge2Situations: React.FC<Challenge2SituationsProps> = ({
 
             {selectedFeedback.reinforcementTip && (
               <div className="feedback-reinforcement-note">
-                <Sparkles size={17} aria-hidden="true" />
+                <Sparkles size={15} aria-hidden="true" />
                 <span>{selectedFeedback.reinforcementTip}</span>
               </div>
             )}
@@ -299,10 +257,10 @@ export const Challenge2Situations: React.FC<Challenge2SituationsProps> = ({
               >
                 <span>
                   {currentIndex + 1 < scenarios.length
-                    ? 'Siguiente situación'
-                    : '¡Completar Reto 2 y pasar al Reto 3!'}
+                    ? 'Siguiente Situación'
+                    : 'Ir al Reto 3 (Verdadero o Falso)'}
                 </span>
-                <ArrowRight size={22} aria-hidden="true" />
+                <ArrowRight size={18} aria-hidden="true" />
               </button>
             )}
           </div>

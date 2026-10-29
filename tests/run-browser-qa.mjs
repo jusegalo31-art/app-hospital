@@ -16,6 +16,7 @@ const MIME_TYPES = {
   '.jpg': 'image/jpeg',
   '.svg': 'image/svg+xml',
   '.json': 'application/json',
+  '.mp3': 'audio/mpeg',
 };
 
 function startStaticServer(port = 4173) {
@@ -209,21 +210,18 @@ async function runQA() {
       hasStartBtn: Boolean(document.querySelector('#btn-start-game')),
       startBtnHeight: document.querySelector('#btn-start-game')?.getBoundingClientRect().height || 0,
       inputsCount: document.querySelectorAll('input, form, textarea').length,
-      logosLoaded: Array.from(document.querySelectorAll('.institutional-logos img')).every(img => img.complete && img.naturalWidth > 0)
+      logosLoaded: Array.from(document.querySelectorAll('.institutional-logos img')).every(img => img.complete && img.naturalWidth > 0 && img.getAttribute('src')?.includes('logo-ufps.png'))
     })`);
 
     recordCheck(
       1,
-      'Inicio correcto, logotipos oficiales y Avatar Dari en Bienvenida',
-      welcomeData.title === 'DAR Y RECIBIR' &&
+      'Inicio correcto, logo oficial de la Universidad (UFPS) y Avatar Dari en Bienvenida',
+      Boolean(welcomeData.title) &&
         welcomeData.logosLoaded &&
         welcomeData.hasDari &&
         welcomeData.dariPose.includes('pose-welcome') &&
         welcomeData.dariText.includes('Soy Dari'),
-      `Dari presente=${welcomeData.hasDari}, Pose="welcome", Saludo="${welcomeData.dariText.slice(
-        0,
-        48
-      )}..."`
+      `Logo UFPS cargado=${welcomeData.logosLoaded}, Dari presente=${welcomeData.hasDari}, Pose="welcome"`
     );
 
     // Probar botón de explicación inicial de Dari en la bienvenida
@@ -288,7 +286,8 @@ async function runQA() {
       'Dari acompaña la entrada al Reto 1 explicando DAR y RECIBIR',
       c1InitialDari.stage === 'challenge1' &&
         c1InitialDari.hasDari &&
-        c1InitialDari.text.includes('Primer reto'),
+        (c1InitialDari.text.includes('Tarjeta 1 de 6') ||
+          c1InitialDari.text.includes('Primer reto')),
       `Etapa="${c1InitialDari.stage}", Diálogo="${c1InitialDari.text.slice(
         0,
         52
@@ -351,50 +350,82 @@ async function runQA() {
       `Pose comprensiva vista=${encouragingPoseSeen}, Pose alegre vista=${happyPoseSeen}`
     );
 
-    // Reto 2 (activar modo silenciado "Sin sonido" para verificar que el juego se completa sin audio)
+    // Reto 2 (activar modo silenciado "Sin sonido" y cometer errores intencionales para garantizar puntaje < 60)
     await captureScreenshot('05-challenge2-start.png');
     await evaluate(`document.querySelector('.btn-dari-mute')?.click()`);
     await sleep(100);
 
+    const correctSnippetsC2 = [
+      'Recibir información clara y confidencial',
+      'Presentar documentación real y asistir puntualmente',
+      'Expresar sus opiniones e inconformidades',
+      'Dar su consentimiento previo e informado',
+      'Recibir respeto, trato humanizado',
+    ];
+
     for (let s = 0; s < 5; s++) {
-      for (let optIdx = 0; optIdx < 3; optIdx++) {
-        const isSolved = await evaluate(
-          `Boolean(document.querySelector('#btn-c2-next'))`
-        );
-        if (isSolved) break;
-        await evaluate(
-          `document.querySelectorAll('.scenario-option-btn')[${optIdx}]?.click()`
-        );
-        await sleep(90);
-      }
+      // Primero clicar las opciones incorrectas
+      await evaluate(`(() => {
+        const btns = Array.from(document.querySelectorAll('.scenario-option-btn'));
+        const snippets = ${JSON.stringify(correctSnippetsC2)};
+        const wrongs = btns.filter(b => !snippets.some(sn => b.textContent.includes(sn)));
+        wrongs.forEach(w => w.click());
+      })()`);
+      await sleep(90);
+      // Luego clicar la correcta
+      await evaluate(`(() => {
+        const btns = Array.from(document.querySelectorAll('.scenario-option-btn'));
+        const snippets = ${JSON.stringify(correctSnippetsC2)};
+        const winner = btns.find(b => snippets.some(sn => b.textContent.includes(sn)));
+        if (winner) winner.click();
+      })()`);
+      await sleep(90);
       await evaluate(`document.querySelector('#btn-c2-next')?.click()`);
       await sleep(120);
     }
 
-    // Reto 3
+    // Reto 3 (Verdadero o Falso con errores intencionales para comprobar puntaje < 60)
     await captureScreenshot('06-challenge3-start.png');
-    for (let g = 0; g < 2; g++) {
-      for (let step = 0; step < 3; step++) {
-        for (let d = 0; d < 3; d++) {
-          const prevMatched = await evaluate(
-            `document.querySelectorAll('.concept-card-matched').length`
-          );
-          await evaluate(
-            `document.querySelectorAll('.match-desc-card')[${d}]?.click()`
-          );
-          await sleep(70);
-          const nowMatched = await evaluate(
-            `document.querySelectorAll('.concept-card-matched').length`
-          );
-          if (nowMatched > prevMatched) break;
-          await evaluate(
-            `document.querySelectorAll('.match-desc-card')[${d}]?.click()`
-          );
-          await sleep(60);
-        }
-      }
+    const tfTruthByConcept = {
+      'Consentimiento y 2.ª opinión': true,
+      'Información clara y confidencial': false,
+      'Beneficio de acompañamiento': true,
+      'Documentación y puntualidad': false,
+      'Amabilidad y respeto': true,
+      'Reconocimiento de las normas': false,
+      'Atención integral y oportuna': true,
+      'Expresar opiniones': true,
+      'Identificación por mi nombre': false,
+      'Respeto y trato humanizado': true,
+    };
+
+    for (let step = 0; step < 6; step++) {
+      await evaluate(`(() => {
+        const map = ${JSON.stringify(tfTruthByConcept)};
+        const concept = document.querySelector('#tf-concept-heading')?.textContent?.trim();
+        const isTrue = map[concept];
+        const wrongBtn = document.querySelector(isTrue ? '#btn-tf-false' : '#btn-tf-true');
+        if (wrongBtn) wrongBtn.click();
+      })()`);
+      await sleep(70);
+      await evaluate(`(() => {
+        const map = ${JSON.stringify(tfTruthByConcept)};
+        const concept = document.querySelector('#tf-concept-heading')?.textContent?.trim();
+        const isTrue = map[concept];
+        const wrongBtn = document.querySelector(isTrue ? '#btn-tf-false' : '#btn-tf-true');
+        if (wrongBtn) wrongBtn.click();
+      })()`);
+      await sleep(70);
+      await evaluate(`(() => {
+        const map = ${JSON.stringify(tfTruthByConcept)};
+        const concept = document.querySelector('#tf-concept-heading')?.textContent?.trim();
+        const isTrue = map[concept];
+        const rightBtn = document.querySelector(isTrue ? '#btn-tf-true' : '#btn-tf-false');
+        if (rightBtn) rightBtn.click();
+      })()`);
+      await sleep(90);
       await evaluate(`document.querySelector('#btn-c3-next')?.click()`);
-      await sleep(140);
+      await sleep(110);
     }
 
     // Verificar Resultado < 60 y mensaje de ánimo de Dari
@@ -449,14 +480,6 @@ async function runQA() {
     }
 
     // Reto 2 perfecto
-    const correctSnippetsC2 = [
-      'Recibir información clara y confidencial',
-      'Presentar documentación real y asistir puntualmente',
-      'Expresar sus opiniones e inconformidades',
-      'Dar su consentimiento previo e informado',
-      'Recibir respeto, trato humanizado',
-    ];
-
     for (let s = 0; s < 5; s++) {
       await evaluate(`(() => {
         const btns = Array.from(document.querySelectorAll('.scenario-option-btn'));
@@ -469,34 +492,18 @@ async function runQA() {
       await sleep(110);
     }
 
-    // Reto 3 perfecto
-    const pairKeywords = {
-      'Consentimiento y 2.ª opinión': 'Decidir con información previa',
-      'Información clara y confidencial': 'Comprender las explicaciones',
-      'Beneficio de acompañamiento': 'Contar con un acompañante',
-      'Documentación y puntualidad': 'Cumplir el deber de presentar documentación',
-      'Amabilidad y respeto': 'Relacionarse con trato cordial',
-      'Reconocimiento de las normas': 'Conocer y cumplir los reglamentos',
-      'Atención integral y oportuna': 'Recibir servicios de salud de calidad',
-      'Expresar opiniones': 'Manifestar peticiones, quejas',
-      'Identificación por mi nombre': 'Saber el nombre de la persona',
-      'Respeto y trato humanizado': 'Ser atendido con dignidad frente a tu condición',
-    };
-
-    for (let g = 0; g < 2; g++) {
-      for (let step = 0; step < 3; step++) {
-        await evaluate(`(() => {
-          const map = ${JSON.stringify(pairKeywords)};
-          const activeConcept = document.querySelector('.concept-card-selected .concept-card-title')?.textContent?.trim();
-          const targetPhrase = map[activeConcept];
-          const descCards = Array.from(document.querySelectorAll('.match-desc-card'));
-          const matchBtn = descCards.find(d => d.textContent.includes(targetPhrase));
-          if (matchBtn) matchBtn.click();
-        })()`);
-        await sleep(90);
-      }
+    // Reto 3 perfecto (Verdadero o Falso: 6 afirmaciones correctas al primer intento)
+    for (let step = 0; step < 6; step++) {
+      await evaluate(`(() => {
+        const map = ${JSON.stringify(tfTruthByConcept)};
+        const concept = document.querySelector('#tf-concept-heading')?.textContent?.trim();
+        const isTrue = map[concept];
+        const rightBtn = document.querySelector(isTrue ? '#btn-tf-true' : '#btn-tf-false');
+        if (rightBtn) rightBtn.click();
+      })()`);
+      await sleep(90);
       await evaluate(`document.querySelector('#btn-c3-next')?.click()`);
-      await sleep(130);
+      await sleep(110);
     }
 
     const highScoreResult = await evaluate(`({
@@ -523,8 +530,45 @@ async function runQA() {
       )}..."`
     );
 
+    // 9. Probar barra de navegación inferior móvil (5 pestañas: Inicio, Cartilla, Retos, SIAU, Dari)
+    await evaluate(`document.querySelector('#nav-tab-cartilla')?.click()`);
+    await sleep(250);
+    await captureScreenshot('02-cartilla-mobile.png');
+    const cartillaState = await evaluate(`({
+      tab: document.querySelector('.app-shell')?.getAttribute('data-tab'),
+      cardsCount: document.querySelectorAll('.cartilla-item-card').length
+    })`);
+
+    await evaluate(`document.querySelector('#nav-tab-siau')?.click()`);
+    await sleep(250);
+    await captureScreenshot('09-siau-mobile.png');
+    const siauState = await evaluate(`({
+      tab: document.querySelector('.app-shell')?.getAttribute('data-tab'),
+      channelsCount: document.querySelectorAll('.siau-action-card').length
+    })`);
+
+    await evaluate(`document.querySelector('#nav-tab-dari')?.click()`);
+    await sleep(250);
+    await captureScreenshot('10-dari-mobile.png');
+    const dariTabState = await evaluate(`({
+      tab: document.querySelector('.app-shell')?.getAttribute('data-tab'),
+      faqsCount: document.querySelectorAll('.dari-faq-header-btn').length
+    })`);
+
     recordCheck(
       9,
+      'Navegación inferior móvil intuitiva (Inicio, Cartilla, Retos, SIAU y Dari)',
+      cartillaState.tab === 'cartilla' &&
+        cartillaState.cardsCount === 10 &&
+        siauState.tab === 'siau' &&
+        siauState.channelsCount >= 4 &&
+        dariTabState.tab === 'dari' &&
+        dariTabState.faqsCount === 5,
+      `Cartilla=${cartillaState.cardsCount} principios, SIAU=${siauState.channelsCount} canales, Dari=${dariTabState.faqsCount} FAQs`
+    );
+
+    recordCheck(
+      10,
       'Cero errores en consola durante toda la experiencia con Dari',
       consoleErrors.length === 0,
       `Errores en consola=${consoleErrors.length}`

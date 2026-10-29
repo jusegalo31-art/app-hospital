@@ -1,4 +1,5 @@
 import React, { useState, useCallback, useRef } from 'react';
+import { Monitor, Smartphone } from 'lucide-react';
 import {
   ScreenStage,
   ChallengeScoreDetail,
@@ -14,24 +15,36 @@ import {
 import { clampTotalScore } from './utils/scoring';
 import { useSpeech } from './hooks/useSpeech';
 import { Header } from './components/Header';
+import { BottomNav, MainTabId } from './components/BottomNav';
 import { WelcomeScreen } from './components/WelcomeScreen';
 import { Challenge1Sort } from './components/Challenge1Sort';
 import { Challenge2Situations } from './components/Challenge2Situations';
 import { Challenge3Match } from './components/Challenge3Match';
 import { ResultsScreen } from './components/ResultsScreen';
+import { CartillaView } from './components/CartillaView';
+import { SiauView } from './components/SiauView';
+import { DariView } from './components/DariView';
 import { ReferenceModal } from './components/ReferenceModal';
 
 export const App: React.FC = () => {
   const speech = useSpeech();
 
-  // Estado de navegación principal
+  // Pestaña activa de la barra inferior móvil (Inicio, Cartilla, Retos, SIAU, Dari)
+  const [activeTab, setActiveTab] = useState<MainTabId>('inicio');
+  // Filtro inicial para la Cartilla
+  const [cartillaFilter, setCartillaFilter] = useState<
+    'all' | 'DAR' | 'RECIBIR' | 'posters'
+  >('all');
+  // Etapa dentro del recorrido de Retos
   const [stage, setStage] = useState<ScreenStage>('welcome');
-  // Clave de sesión para reiniciar todos los estados de los retos sin recargar la página
+  // Clave de sesión para reiniciar retos sin recargar la página
   const [sessionKey, setSessionKey] = useState<number>(1);
-  // Modo de letra extra grande para accesibilidad visual
+  // Modo de letra grande accesible
   const [largeText, setLargeText] = useState<boolean>(false);
-  // Modal de cartilla institucional
+  // Modal de referencia rápida
   const [isReferenceOpen, setIsReferenceOpen] = useState<boolean>(false);
+  // En pantallas de escritorio: alternar entre marco móvil (400px) o vista amplia
+  const [isMobileFramed, setIsMobileFramed] = useState<boolean>(false);
 
   // Datos generados para la partida actual
   const [c1Cards, setC1Cards] = useState<SortCardItem[]>(() =>
@@ -44,10 +57,9 @@ export const App: React.FC = () => {
     () => generateChallenge3Groups()
   );
 
-  // Control de ítems ya calificados en la partida actual (evita puntos infinitos)
   const scoredItemsRef = useRef<Set<string>>(new Set());
+  const mainScrollRef = useRef<HTMLElement | null>(null);
 
-  // Estado de puntuación detallada
   const [scoreDetail, setScoreDetail] = useState<ChallengeScoreDetail>({
     challenge1Points: 0,
     challenge2Points: 0,
@@ -62,19 +74,18 @@ export const App: React.FC = () => {
     missedPrincipleIds: [],
   });
 
-  // Contador de actividades resueltas para la barra de progreso (total 17 pasos)
   const [completedStepsCount, setCompletedStepsCount] = useState<number>(0);
-  const totalGameSteps = 17; // 6 (Reto 1) + 5 (Reto 2) + 6 (Reto 3)
+  const totalGameSteps = 17;
 
   const scrollToTop = () => {
+    if (mainScrollRef.current) {
+      mainScrollRef.current.scrollTo({ top: 0, behavior: 'smooth' });
+    }
     if (typeof window !== 'undefined') {
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   };
 
-  /**
-   * Reinicia el estado de la partida para comenzar desde cero o volver a intentar
-   */
   const resetAndStartNewGame = useCallback(
     (targetStage: ScreenStage = 'challenge1') => {
       speech.stop();
@@ -98,6 +109,31 @@ export const App: React.FC = () => {
       });
       setSessionKey((prev) => prev + 1);
       setStage(targetStage);
+      setActiveTab(targetStage === 'welcome' ? 'inicio' : 'retos');
+      scrollToTop();
+    },
+    [speech]
+  );
+
+  const handleSelectBottomTab = useCallback(
+    (tab: MainTabId) => {
+      speech.stop();
+      setActiveTab(tab);
+      if (tab === 'inicio') {
+        setStage('welcome');
+      } else if (tab === 'retos' && stage === 'welcome') {
+        setStage('challenge1');
+      }
+      scrollToTop();
+    },
+    [speech, stage]
+  );
+
+  const handleOpenCartillaWithFilter = useCallback(
+    (filter: 'all' | 'DAR' | 'RECIBIR' = 'all') => {
+      speech.stop();
+      setCartillaFilter(filter);
+      setActiveTab('cartilla');
       scrollToTop();
     },
     [speech]
@@ -219,96 +255,235 @@ export const App: React.FC = () => {
     (completedStepsCount / totalGameSteps) * 100
   );
 
+  const c1Done = scoreDetail.challenge1Points > 0 && stage !== 'challenge1';
+  const c2Done = scoreDetail.challenge2Points > 0 && stage !== 'challenge2';
+  const c3Done = stage === 'results';
+
   return (
     <div
-      className={`app-shell ${largeText ? 'app-large-text' : ''}`}
-      data-stage={stage}
+      className={`app-outer-frame ${isMobileFramed ? 'frame-phone-mode' : ''}`}
     >
-      <Header
-        stage={stage}
-        challengeProgressPercent={challengeProgressPercent}
-        largeText={largeText}
-        onToggleLargeText={() => setLargeText((prev) => !prev)}
-        onOpenReference={() => setIsReferenceOpen(true)}
-        onRestart={() => resetAndStartNewGame('welcome')}
-      />
+      {/* Barra superior opcional en pantallas de escritorio para alternar vista celular / completa */}
+      <div className="desktop-preview-bar">
+        <div className="desktop-preview-left">
+          <span className="desktop-dot" />
+          <strong>DAR Y RECIBIR • E.S.E. Hospital Universitario Erasmo Meoz</strong>
+          <span className="desktop-sep">|</span>
+          <span>Experiencia Móvil Interactiva • Voz Colombiana</span>
+        </div>
+        <button
+          type="button"
+          onClick={() => setIsMobileFramed((prev) => !prev)}
+          className="btn-desktop-frame-toggle"
+        >
+          {isMobileFramed ? (
+            <>
+              <Monitor size={14} aria-hidden="true" />
+              <span>Vista Completa</span>
+            </>
+          ) : (
+            <>
+              <Smartphone size={14} aria-hidden="true" />
+              <span>Enmarcar en Celular</span>
+            </>
+          )}
+        </button>
+      </div>
 
-      <main className="app-main" id="main-content">
-        {stage === 'welcome' && (
-          <WelcomeScreen
-            speech={speech}
-            onStartGame={() => resetAndStartNewGame('challenge1')}
-            onOpenReference={() => setIsReferenceOpen(true)}
-          />
-        )}
+      {/* Contenedor Principal de la Aplicación */}
+      <div
+        className={`app-shell ${largeText ? 'app-large-text' : ''} ${
+          isMobileFramed ? 'shell-phone-bezel' : ''
+        }`}
+        data-stage={stage}
+        data-tab={activeTab}
+      >
+        <Header
+          stage={activeTab === 'retos' ? stage : 'welcome'}
+          challengeProgressPercent={challengeProgressPercent}
+          largeText={largeText}
+          onToggleLargeText={() => setLargeText((prev) => !prev)}
+          onOpenReference={() => setIsReferenceOpen(true)}
+          onRestart={() => resetAndStartNewGame('welcome')}
+          speech={speech}
+        />
 
-        {stage === 'challenge1' && (
-          <Challenge1Sort
-            key={`c1-${sessionKey}`}
-            cards={c1Cards}
-            speech={speech}
-            onItemScored={handleChallenge1Scored}
-            onCompleteChallenge={() => {
-              setStage('challenge2');
-              scrollToTop();
-            }}
-          />
-        )}
+        <main
+          ref={mainScrollRef}
+          className="app-main"
+          id="main-content"
+        >
+          {/* PESTAÑA 1: INICIO */}
+          {activeTab === 'inicio' && (
+            <WelcomeScreen
+              speech={speech}
+              onStartGame={() => resetAndStartNewGame('challenge1')}
+              onOpenReference={handleOpenCartillaWithFilter}
+              onOpenSiau={() => handleSelectBottomTab('siau')}
+            />
+          )}
 
-        {stage === 'challenge2' && (
-          <Challenge2Situations
-            key={`c2-${sessionKey}`}
-            scenarios={c2Scenarios}
-            speech={speech}
-            onItemScored={handleChallenge2Scored}
-            onCompleteChallenge={() => {
-              setStage('challenge3');
-              scrollToTop();
-            }}
-          />
-        )}
+          {/* PESTAÑA 2: CARTILLA OFICIAL INTERACTIVA */}
+          {activeTab === 'cartilla' && (
+            <CartillaView
+              key={`cartilla-${cartillaFilter}`}
+              speech={speech}
+              initialFilter={cartillaFilter}
+            />
+          )}
 
-        {stage === 'challenge3' && (
-          <Challenge3Match
-            key={`c3-${sessionKey}`}
-            groups={c3Groups}
-            speech={speech}
-            onItemScored={handleChallenge3Scored}
-            onCompleteChallenge={() => {
-              setStage('results');
-              scrollToTop();
-            }}
-          />
-        )}
+          {/* PESTAÑA 3: RETOS EDUCATIVOS Y CERTIFICADO */}
+          {activeTab === 'retos' && (
+            <div className="retos-tab-container">
+              {/* Selector Superior de Retos (Diseño Móvil Intuitivo) */}
+              <div
+                className="retos-switcher-card"
+                aria-label="Selector de retos educativos"
+              >
+                <div className="retos-switcher-head">
+                  <span className="retos-switcher-kicker">
+                    JUEGO EDUCATIVO • TRATO DIGNO
+                  </span>
+                  <span className="retos-switcher-score">
+                    Puntos: {scoreDetail.totalScore}/100
+                  </span>
+                </div>
 
-        {stage === 'results' && (
-          <ResultsScreen
-            key={`res-${sessionKey}`}
-            scoreDetail={scoreDetail}
-            speech={speech}
-            onPlayAgain={() => resetAndStartNewGame('challenge1')}
-            onOpenReference={() => setIsReferenceOpen(true)}
-          />
-        )}
-      </main>
+                <div className="retos-switcher-tabs" role="tablist">
+                  <button
+                    type="button"
+                    role="tab"
+                    aria-selected={stage === 'challenge1'}
+                    onClick={() => {
+                      speech.stop();
+                      setStage('challenge1');
+                      scrollToTop();
+                    }}
+                    className={`reto-switch-btn ${
+                      stage === 'challenge1' ? 'reto-switch-active' : ''
+                    }`}
+                  >
+                    <span className="reto-switch-title">Reto 1</span>
+                    <span className="reto-switch-sub">
+                      {c1Done ? '✓ Completado' : 'Clasificador'}
+                    </span>
+                  </button>
 
-      <footer className="app-footer" role="contentinfo">
-        <p className="footer-slogan">
-          “Cumpliendo nuestros deberes garantizamos tus derechos” —{' '}
-          <strong>E.S.E. Hospital Universitario Erasmo Meoz</strong>, ¡Un
-          Hospital de Todos!
-        </p>
-        <p className="footer-privacy">
-          Juego educativo gratuito • Sin recopilación de datos personales •
-          Programa de Enfermería UFPS
-        </p>
-      </footer>
+                  <button
+                    type="button"
+                    role="tab"
+                    aria-selected={stage === 'challenge2'}
+                    onClick={() => {
+                      speech.stop();
+                      setStage('challenge2');
+                      scrollToTop();
+                    }}
+                    className={`reto-switch-btn ${
+                      stage === 'challenge2' ? 'reto-switch-active' : ''
+                    }`}
+                  >
+                    <span className="reto-switch-title">Reto 2</span>
+                    <span className="reto-switch-sub">
+                      {c2Done ? '✓ Completado' : 'Casos Reales'}
+                    </span>
+                  </button>
 
-      <ReferenceModal
-        isOpen={isReferenceOpen}
-        onClose={() => setIsReferenceOpen(false)}
-        speech={speech}
-      />
+                  <button
+                    type="button"
+                    role="tab"
+                    aria-selected={
+                      stage === 'challenge3' || stage === 'results'
+                    }
+                    onClick={() => {
+                      speech.stop();
+                      setStage(c3Done ? 'results' : 'challenge3');
+                      scrollToTop();
+                    }}
+                    className={`reto-switch-btn ${
+                      stage === 'challenge3' || stage === 'results'
+                        ? 'reto-switch-active'
+                        : ''
+                    }`}
+                  >
+                    <span className="reto-switch-title">Reto 3</span>
+                    <span className="reto-switch-sub">
+                      {c3Done ? '✓ Insignia' : 'Verdadero o Falso'}
+                    </span>
+                  </button>
+                </div>
+              </div>
+
+              {stage === 'challenge1' && (
+                <Challenge1Sort
+                  key={`c1-${sessionKey}`}
+                  cards={c1Cards}
+                  speech={speech}
+                  onItemScored={handleChallenge1Scored}
+                  onCompleteChallenge={() => {
+                    setStage('challenge2');
+                    scrollToTop();
+                  }}
+                />
+              )}
+
+              {stage === 'challenge2' && (
+                <Challenge2Situations
+                  key={`c2-${sessionKey}`}
+                  scenarios={c2Scenarios}
+                  speech={speech}
+                  onItemScored={handleChallenge2Scored}
+                  onCompleteChallenge={() => {
+                    setStage('challenge3');
+                    scrollToTop();
+                  }}
+                />
+              )}
+
+              {stage === 'challenge3' && (
+                <Challenge3Match
+                  key={`c3-${sessionKey}`}
+                  groups={c3Groups}
+                  speech={speech}
+                  onItemScored={handleChallenge3Scored}
+                  onCompleteChallenge={() => {
+                    setStage('results');
+                    scrollToTop();
+                  }}
+                />
+              )}
+
+              {stage === 'results' && (
+                <ResultsScreen
+                  key={`res-${sessionKey}`}
+                  scoreDetail={scoreDetail}
+                  speech={speech}
+                  onPlayAgain={() => resetAndStartNewGame('challenge1')}
+                  onOpenReference={() => setIsReferenceOpen(true)}
+                />
+              )}
+            </div>
+          )}
+
+          {/* PESTAÑA 4: CANALES SIAU */}
+          {activeTab === 'siau' && <SiauView />}
+
+          {/* PESTAÑA 5: CONVERSANDO CON DARI */}
+          {activeTab === 'dari' && <DariView speech={speech} />}
+        </main>
+
+        {/* Barra de Navegación Inferior Móvil (Zona del Pulgar - 5 Pestañas) */}
+        <BottomNav
+          activeTab={activeTab}
+          onSelectTab={handleSelectBottomTab}
+          retosBadge={3}
+        />
+
+        <ReferenceModal
+          isOpen={isReferenceOpen}
+          onClose={() => setIsReferenceOpen(false)}
+          speech={speech}
+        />
+      </div>
     </div>
   );
 };
