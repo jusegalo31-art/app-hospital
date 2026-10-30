@@ -37,11 +37,11 @@ export function useBackgroundMusic(isDariSpeaking: boolean): BackgroundMusicHook
   const ensureAudioInstance = useCallback(() => {
     if (typeof window === 'undefined') return null;
     if (!audioRef.current) {
-      const audio = new Audio();
-      audio.src = BG_MUSIC_URL;
+      const audio = new Audio(BG_MUSIC_URL);
       audio.loop = true;
-      audio.preload = 'none';
+      audio.preload = 'auto';
       audio.volume = VOLUME_NORMAL;
+      audio.setAttribute('playsinline', 'true');
       audio.onplay = () => setIsMusicPlaying(true);
       audio.onpause = () => setIsMusicPlaying(false);
       audioRef.current = audio;
@@ -56,27 +56,71 @@ export function useBackgroundMusic(isDariSpeaking: boolean): BackgroundMusicHook
     audio.volume = isDariSpeaking ? VOLUME_DUCKED : VOLUME_NORMAL;
   }, [isDariSpeaking]);
 
-  // Iniciar reproducción suave tras la primera interacción del usuario si no está silenciada
+  // Intentar reproducción automática al abrir la página y desbloquear en el primer toque móvil
   useEffect(() => {
     if (typeof window === 'undefined') return;
 
-    const tryStartMusic = () => {
-      if (isMutedRef.current) return;
-      const audio = ensureAudioInstance();
-      if (audio && audio.paused) {
-        audio.play().catch(() => {
-          // El navegador espera interacción del usuario
-        });
-      }
+    const audio = ensureAudioInstance();
+    if (!audio) return;
+
+    // En celulares (iOS Safari / Android Chrome), 'touchend' y 'click' son los eventos
+    // que el navegador valida para desbloquear el audio; no removemos los listeners
+    // hasta que audio.play() se resuelva exitosamente.
+    const unlockEvents = ['click', 'touchend', 'pointerup', 'touchstart', 'pointerdown', 'keydown'];
+
+    const removeUnlockListeners = () => {
+      unlockEvents.forEach((evt) => {
+        window.removeEventListener(evt, tryStartMusic, true);
+        document.removeEventListener(evt, tryStartMusic, true);
+      });
     };
 
-    const events = ['pointerdown', 'keydown', 'touchstart'];
-    events.forEach((evt) =>
-      window.addEventListener(evt, tryStartMusic, { once: true, passive: true })
-    );
+    function tryStartMusic() {
+      if (isMutedRef.current) return;
+      const instance = ensureAudioInstance();
+      if (!instance) return;
+
+      if (!instance.paused) {
+        removeUnlockListeners();
+        return;
+      }
+
+      const playPromise = instance.play();
+      if (playPromise !== undefined) {
+        playPromise
+          .then(() => {
+            setIsMusicPlaying(true);
+            removeUnlockListeners();
+          })
+          .catch(() => {
+            // Si el navegador móvil bloquea el autoplay inicial o el touchstart,
+            // conservamos los listeners activos para el siguiente touchend/click.
+          });
+      }
+    }
+
+    // 1. Intentar reproducir inmediatamente al cargar la página
+    if (!isMutedRef.current) {
+      tryStartMusic();
+    }
+
+    // 2. Registrar listeners en fase de captura para desbloquear al primer toque en celular
+    unlockEvents.forEach((evt) => {
+      window.addEventListener(evt, tryStartMusic, { capture: true, passive: true });
+      document.addEventListener(evt, tryStartMusic, { capture: true, passive: true });
+    });
+
+    // 3. Reanudar si el usuario vuelve a la pestaña en el celular y no está silenciada
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible' && !isMutedRef.current) {
+        tryStartMusic();
+      }
+    };
+    document.addEventListener('visibilitychange', handleVisibilityChange);
 
     return () => {
-      events.forEach((evt) => window.removeEventListener(evt, tryStartMusic));
+      removeUnlockListeners();
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
     };
   }, [ensureAudioInstance]);
 

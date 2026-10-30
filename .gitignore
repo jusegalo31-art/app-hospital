@@ -40,3 +40,7 @@ tests/screenshots/
 # AI Studio
 .aistudio/
 
+# Raw unoptimized source audio (optimized version is in public/recursos/audio/musica-fondo.mp3)
+Cancion/
+
+
