@@ -276,7 +276,7 @@ export const CartillaView: React.FC<CartillaViewProps> = ({
                     <div className="cartilla-item-details">
                       <div className="cartilla-detail-block">
                         <h4>DEFINICIÓN OFICIAL</h4>
-                        <p>“{item.officialText}”</p>
+                        <p>“{item.officialText.replace(/\.$/, '')}”.</p>
                       </div>
 
                       <div className="cartilla-practical-box">

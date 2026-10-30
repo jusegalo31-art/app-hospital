@@ -14,6 +14,7 @@ import {
 } from './data/institutionalContent';
 import { clampTotalScore } from './utils/scoring';
 import { useSpeech } from './hooks/useSpeech';
+import { useBackgroundMusic } from './hooks/useBackgroundMusic';
 import { Header } from './components/Header';
 import { BottomNav, MainTabId } from './components/BottomNav';
 import { WelcomeScreen } from './components/WelcomeScreen';
@@ -28,6 +29,7 @@ import { ReferenceModal } from './components/ReferenceModal';
 
 export const App: React.FC = () => {
   const speech = useSpeech();
+  const bgMusic = useBackgroundMusic(speech.isSpeaking);
 
   // Pestaña activa de la barra inferior móvil (Inicio, Cartilla, Retos, SIAU, Dari)
   const [activeTab, setActiveTab] = useState<MainTabId>('inicio');
@@ -306,6 +308,7 @@ export const App: React.FC = () => {
           onOpenReference={() => setIsReferenceOpen(true)}
           onRestart={() => resetAndStartNewGame('welcome')}
           speech={speech}
+          bgMusic={bgMusic}
         />
 
         <main

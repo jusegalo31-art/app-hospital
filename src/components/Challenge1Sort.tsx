@@ -222,7 +222,9 @@ export const Challenge1Sort: React.FC<Challenge1SortProps> = ({
           }}
         >
           <span className="sort-card-kicker">SITUACIÓN A CLASIFICAR</span>
-          <p className="sort-card-main-text">“{currentCard.text}”</p>
+          <p className="sort-card-main-text">
+            “{currentCard.text.replace(/\.$/, '')}”.
+          </p>
         </div>
       )}
 

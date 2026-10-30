@@ -213,7 +213,9 @@ export const Challenge3Match: React.FC<Challenge3MatchProps> = ({
           <IconBadge name={currentItem.icon} size={22} />
         </div>
 
-        <p className="tf-statement-text">“{currentItem.statement}”</p>
+        <p className="tf-statement-text">
+          “{currentItem.statement.replace(/\.$/, '')}”.
+        </p>
       </article>
 
       {/* Botones Grandes de VERDADERO y FALSO (Zona del Pulgar) */}

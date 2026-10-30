@@ -120,7 +120,7 @@ export const ReferenceModal: React.FC<ReferenceModalProps> = ({
             <div className="modal-section-content">
               <p className="modal-intro-note">
                 “Cumpliendo nuestros deberes garantizamos tus derechos. E.S.E.
-                Hospital Universitario Erasmo Meoz, ¡Un Hospital de Todos!”
+                Hospital Universitario Erasmo Meoz, ¡Un Hospital de Todos!”.
               </p>
 
               <h3 className="modal-group-heading heading-dar">

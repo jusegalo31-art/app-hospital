@@ -210,18 +210,22 @@ async function runQA() {
       hasStartBtn: Boolean(document.querySelector('#btn-start-game')),
       startBtnHeight: document.querySelector('#btn-start-game')?.getBoundingClientRect().height || 0,
       inputsCount: document.querySelectorAll('input, form, textarea').length,
-      logosLoaded: Array.from(document.querySelectorAll('.institutional-logos img')).every(img => img.complete && img.naturalWidth > 0 && img.getAttribute('src')?.includes('logo-ufps.png'))
+      logosCount: document.querySelectorAll('.institutional-logos img').length,
+      logosLoaded: Array.from(document.querySelectorAll('.institutional-logos img')).every(img => img.complete && img.naturalWidth > 0),
+      hasMusicBtn: Boolean(document.querySelector('#btn-bg-music-toggle'))
     })`);
 
     recordCheck(
       1,
-      'Inicio correcto, logo oficial de la Universidad (UFPS) y Avatar Dari en Bienvenida',
+      'Inicio correcto, ambos logos oficiales (Hospital HUEM y Universidad UFPS), botón de música y Avatar Dari',
       Boolean(welcomeData.title) &&
+        welcomeData.logosCount === 2 &&
         welcomeData.logosLoaded &&
+        welcomeData.hasMusicBtn &&
         welcomeData.hasDari &&
         welcomeData.dariPose.includes('pose-welcome') &&
         welcomeData.dariText.includes('Soy Dari'),
-      `Logo UFPS cargado=${welcomeData.logosLoaded}, Dari presente=${welcomeData.hasDari}, Pose="welcome"`
+      `Logos cargados=${welcomeData.logosCount}/2 (${welcomeData.logosLoaded}), Botón música=${welcomeData.hasMusicBtn}, Dari presente=${welcomeData.hasDari}`
     );
 
     // Probar botón de explicación inicial de Dari en la bienvenida
@@ -511,23 +515,26 @@ async function runQA() {
       score: Number(document.querySelector('.score-big-number')?.textContent || '0'),
       dariText: document.querySelector('.dari-bubble-text')?.textContent || '',
       dariPose: document.querySelector('.dari-avatar-wrapper')?.className || '',
-      summaryCardsCount: document.querySelectorAll('.learned-summary-section .principle-summary-card').length
+      summaryCardsCount: document.querySelectorAll('.learned-summary-section .principle-summary-card').length,
+      diplomaText: document.querySelector('.certificate-diploma-box')?.textContent || '',
+      diplomaImgs: document.querySelectorAll('.certificate-diploma-box img').length
     })`);
 
     await captureScreenshot('08-results-passed-100.png');
 
     recordCheck(
       8,
-      'Resultado >= 60 muestra celebración de Dari, puntaje 100/100 y los 10 principios',
+      'Resultado >= 60 muestra celebración de Dari, puntaje 100/100 y tarjeta de Logro Conseguido sin nombres institucionales ni palabra certifica',
       highScoreResult.stage === 'results' &&
         highScoreResult.score === 100 &&
         highScoreResult.dariPose.includes('pose-celebrating') &&
         highScoreResult.dariText.includes('Lo lograste') &&
-        highScoreResult.summaryCardsCount === 10,
-      `Puntaje=${highScoreResult.score}/100, Pose="celebrating", Diálogo="${highScoreResult.dariText.slice(
-        0,
-        48
-      )}..."`
+        highScoreResult.summaryCardsCount === 10 &&
+        highScoreResult.diplomaText.includes('LOGRO CONSEGUIDO') &&
+        highScoreResult.diplomaText.includes('conocedor de los derechos y deberes') &&
+        !highScoreResult.diplomaText.toLowerCase().includes('certifica') &&
+        highScoreResult.diplomaImgs === 0,
+      `Puntaje=${highScoreResult.score}/100, Logro="${highScoreResult.diplomaText.slice(0, 56)}..."`
     );
 
     // 9. Probar barra de navegación inferior móvil (5 pestañas: Inicio, Cartilla, Retos, SIAU, Dari)

@@ -82,11 +82,11 @@ export const ResultsScreen: React.FC<ResultsScreenProps> = ({
   };
 
   const handleShareAchievement = () => {
-    const text = `¡Completé la guía educativa DAR y RECIBIR del E.S.E. Hospital Universitario Erasmo Meoz con ${scoreDetail.totalScore}/100 puntos (${badgeTitle})!`;
+    const text = `¡Logro conseguido! Soy un conocedor de los derechos y deberes en DAR y RECIBIR con ${scoreDetail.totalScore}/100 puntos (${badgeTitle}).`;
     if (typeof navigator !== 'undefined' && navigator.share) {
       navigator
         .share({
-          title: 'Certificado DAR y RECIBIR • HUEM',
+          title: 'Logro Conseguido • DAR y RECIBIR',
           text,
         })
         .catch(() => {});
@@ -196,15 +196,15 @@ export const ResultsScreen: React.FC<ResultsScreenProps> = ({
         </div>
       </div>
 
-      {/* Certificado / Insignia Oficial de Trato Digno (Diseño Móvil Intuitivo) */}
+      {/* Reconocimiento de Logro Conseguido (Sin nombres de instituciones, sin logos y sin la palabra certifica) */}
       {isPassed && (
         <div
           className="certificate-card-section"
-          aria-label="Certificado personalizado de Trato Digno"
+          aria-label="Logro conseguido de derechos y deberes"
         >
           <div className="certificate-input-row">
             <label htmlFor="cert-user-name" className="certificate-label">
-              Ingresa tu nombre para personalizar tu insignia:
+              Escribe tu nombre para personalizar tu logro (opcional):
             </label>
             <input
               id="cert-user-name"
@@ -217,31 +217,26 @@ export const ResultsScreen: React.FC<ResultsScreenProps> = ({
           </div>
 
           <div className="certificate-diploma-box">
-            <span className="certificate-watermark" aria-hidden="true">
-              UFPS
+            <span className="achievement-kicker-pill">
+              <Sparkles size={14} aria-hidden="true" />
+              <span>¡LOGRO CONSEGUIDO!</span>
             </span>
-            <div className="certificate-ufps-logo-wrap">
-              <img
-                src="/recursos/logo-ufps.png"
-                alt="Logo Universidad Francisco de Paula Santander - Programa de Enfermería"
-                className="certificate-ufps-logo"
-              />
-            </div>
-            <p className="certificate-inst-top">
-              UNIVERSIDAD FRANCISCO DE PAULA SANTANDER • PROGRAMA DE ENFERMERÍA
-            </p>
-            <p className="certificate-inst-sub">
-              E.S.E. Hospital Universitario Erasmo Meoz • DAR y RECIBIR
-            </p>
+
+            <h3 className="achievement-main-title">
+              ¡Eres un conocedor de los derechos y deberes!
+            </h3>
 
             <div className="certificate-recipient-block">
-              <span className="certificate-certifies">Certifica que:</span>
-              <strong className="certificate-recipient-name">
-                {userName.trim() ? userName.trim() : 'Usuario Ejemplar en Salud'}
-              </strong>
+              {userName.trim() && (
+                <strong className="certificate-recipient-name">
+                  {userName.trim()}
+                </strong>
+              )}
               <p className="certificate-recipient-desc">
-                Conoce activamente sus 7 derechos (RECIBIR), practica sus 3
-                deberes (DAR) y promueve el trato digno y humanizado.
+                Has superado con éxito los retos educativos de DAR y RECIBIR,
+                demostrando que conoces tus 7 derechos (RECIBIR) y tus 3
+                deberes (DAR) para promover siempre un trato digno, respetuoso
+                y humanizado.
               </p>
             </div>
 
@@ -251,7 +246,8 @@ export const ResultsScreen: React.FC<ResultsScreenProps> = ({
             </div>
 
             <span className="certificate-date-foot">
-              Fecha: {new Date().toLocaleDateString('es-CO')}
+              Puntaje: {scoreDetail.totalScore}/100 • Fecha:{' '}
+              {new Date().toLocaleDateString('es-CO')}
             </span>
           </div>
         </div>
@@ -374,7 +370,9 @@ export const ResultsScreen: React.FC<ResultsScreenProps> = ({
                   </button>
                 </div>
                 <h3>{item.shortTitle}</h3>
-                <p className="official-quote">“{item.officialText}”</p>
+                <p className="official-quote">
+                  “{item.officialText.replace(/\.$/, '')}”.
+                </p>
                 <p className="citizen-note">{item.citizenExplanation}</p>
               </div>
             ))}

@@ -174,7 +174,8 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
                     isQuoteExpanded ? '' : 'dari-text-compressed'
                   }`}
                 >
-                  “{activeDialogue.text}”
+                  “{activeDialogue.text.replace(/\.$/, '')}”
+                  {activeDialogue.text.endsWith('.') ? '.' : ''}
                 </p>
                 <span className="btn-expand-dari-text">
                   {isQuoteExpanded ? (
@@ -391,11 +392,11 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
           <div className="home-step-item">
             <span className="home-step-num">3</span>
             <div>
-              <h3>Verdadero o Falso y Certificado de Trato Digno</h3>
+              <h3>Verdadero o Falso y Logro Conseguido</h3>
               <p>
                 Pon a prueba lo aprendido respondiendo Verdadero o Falso sobre
                 tus derechos y deberes, conoce tu calificación sobre 100 y
-                genera tu insignia oficial.
+                desbloquea tu logro como conocedor.
               </p>
             </div>
           </div>

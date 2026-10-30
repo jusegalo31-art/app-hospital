@@ -1,7 +1,8 @@
 import React from 'react';
-import { Type, Volume2, VolumeX, BookOpen } from 'lucide-react';
+import { Type, Volume2, VolumeX, BookOpen, Music } from 'lucide-react';
 import { ScreenStage } from '../types/game';
 import { SpeechHook } from '../hooks/useSpeech';
+import { BackgroundMusicHook } from '../hooks/useBackgroundMusic';
 
 interface HeaderProps {
   stage: ScreenStage;
@@ -11,6 +12,7 @@ interface HeaderProps {
   onOpenReference: () => void;
   onRestart: () => void;
   speech?: SpeechHook;
+  bgMusic?: BackgroundMusicHook;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -21,38 +23,38 @@ export const Header: React.FC<HeaderProps> = ({
   onOpenReference,
   onRestart,
   speech,
+  bgMusic,
 }) => {
   const isMuted = speech?.isMuted ?? false;
+  const isMusicMuted = bgMusic?.isMusicMuted ?? false;
 
   return (
     <header className="compact-mobile-header" role="banner">
       <div className="compact-header-inner">
-        {/* Identidad Institucional con el Logo de la Universidad (UFPS Enfermería) */}
+        {/* Ambos Logos Oficiales: Primero Universidad UFPS y después Hospital Universitario Erasmo Meoz */}
         <button
           type="button"
           onClick={onRestart}
           className="compact-brand-btn institutional-logos"
-          title="Ir al inicio de DAR y RECIBIR"
-          aria-label="Universidad Francisco de Paula Santander - Programa de Enfermería - Ir al inicio"
+          title="Ir al inicio"
+          aria-label="Universidad Francisco de Paula Santander y E.S.E. Hospital Universitario Erasmo Meoz - Ir al inicio"
         >
-          <div className="compact-ufps-logo-box">
+          <div className="compact-dual-logo-pill">
             <img
               src="/recursos/logo-ufps.png"
               alt="Logo Universidad Francisco de Paula Santander - Programa de Enfermería"
-              className="compact-ufps-main-logo"
+              className="compact-dual-logo-ufps"
             />
-          </div>
-          <div className="compact-brand-texts">
-            <span className="compact-brand-title">DAR y RECIBIR</span>
-            <span className="compact-brand-sub">
-              <strong className="brand-dar-recibir">HUEM</strong>
-              <span className="brand-dot">·</span>
-              <span className="brand-ufps-text">UFPS Enfermería</span>
-            </span>
+            <span className="compact-dual-logo-divider" aria-hidden="true" />
+            <img
+              src="/recursos/logo-hospital.jpeg"
+              alt="Logo E.S.E. Hospital Universitario Erasmo Meoz"
+              className="compact-dual-logo-huem"
+            />
           </div>
         </button>
 
-        {/* Controles compactos de accesibilidad y audio */}
+        {/* Controles compactos de accesibilidad, música de fondo y voz de Dari */}
         <div className="compact-header-actions">
           <button
             type="button"
@@ -80,6 +82,37 @@ export const Header: React.FC<HeaderProps> = ({
           >
             <Type size={17} aria-hidden="true" />
           </button>
+
+          {bgMusic && (
+            <button
+              type="button"
+              onClick={bgMusic.toggleMusic}
+              id="btn-bg-music-toggle"
+              className={`compact-icon-btn ${
+                isMusicMuted
+                  ? 'compact-icon-btn-music-off'
+                  : 'compact-icon-btn-music-on'
+              }`}
+              aria-pressed={!isMusicMuted}
+              title={
+                isMusicMuted
+                  ? 'Encender música suave de fondo'
+                  : 'Apagar música de fondo'
+              }
+              aria-label={
+                isMusicMuted
+                  ? 'Música de fondo apagada. Toca para encenderla'
+                  : 'Música de fondo encendida. Toca para apagarla'
+              }
+            >
+              <span className="music-icon-wrap">
+                <Music size={16} aria-hidden="true" />
+                {isMusicMuted && (
+                  <span className="music-slash-line" aria-hidden="true" />
+                )}
+              </span>
+            </button>
+          )}
 
           {speech && (
             <button

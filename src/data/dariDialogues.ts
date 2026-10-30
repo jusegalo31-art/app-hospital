@@ -145,7 +145,7 @@ export function getDariChallenge1CardPrompt(
       event: 'challenge_enter',
       pose: 'explaining',
       speakerTitle: 'Dari • Primer reto: DAR o RECIBIR',
-      text: `${DARI_CORE_DIALOGUES.c1_intro.text} Mira esta primera tarjeta: “${card.text}”.`,
+      text: `${DARI_CORE_DIALOGUES.c1_intro.text} Mira esta primera tarjeta: “${card.text.replace(/\.$/, '')}”.`,
       preRecordedAudioUrl: getColombianAudioPath(clipId),
     };
   }
@@ -156,7 +156,7 @@ export function getDariChallenge1CardPrompt(
     event: 'case_present',
     pose: 'listening',
     speakerTitle: `Dari • Tarjeta ${index + 1} de ${total}`,
-    text: `Leamos esta tarjeta: “${card.text}”. ¿Crees que es un deber que debemos cumplir (DAR) o un derecho que podemos recibir (RECIBIR)?`,
+    text: `Leamos esta tarjeta: “${card.text.replace(/\.$/, '')}”. ¿Crees que es un deber que debemos cumplir (DAR) o un derecho que podemos recibir (RECIBIR)?`,
     preRecordedAudioUrl: getColombianAudioPath(clipId),
   };
 }
@@ -327,7 +327,7 @@ export function getDariChallenge3TrueFalsePrompt(
       event: 'challenge_enter',
       pose: 'explaining',
       speakerTitle: 'Dari • Reto 3: Verdadero o Falso',
-      text: `¡Llegamos al tercer y último reto: Verdadero o Falso! Analicemos esta afirmación sobre “${item.concept}”: “${item.statement}”. ¿Crees que es verdadero o falso?`,
+      text: `¡Llegamos al tercer y último reto: Verdadero o Falso! Analicemos esta afirmación sobre “${item.concept}”: “${item.statement.replace(/\.$/, '')}”. ¿Crees que es verdadero o falso?`,
       preRecordedAudioUrl: getColombianAudioPath(clipId),
     };
   }
@@ -338,7 +338,7 @@ export function getDariChallenge3TrueFalsePrompt(
     event: 'case_present',
     pose: 'listening',
     speakerTitle: `Dari • Afirmación ${index + 1} de ${total} (${item.concept})`,
-    text: `Leamos esta afirmación sobre “${item.concept}”: “${item.statement}”. ¿Crees que es verdadero o falso?`,
+    text: `Leamos esta afirmación sobre “${item.concept}”: “${item.statement.replace(/\.$/, '')}”. ¿Crees que es verdadero o falso?`,
     preRecordedAudioUrl: getColombianAudioPath(clipId),
   };
 }

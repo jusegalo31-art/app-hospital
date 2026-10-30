@@ -156,7 +156,7 @@ export const DariView: React.FC<DariViewProps> = ({ speech }) => {
           className="humanized-footer-icon"
           aria-hidden="true"
         />
-        <p>“El trato humanizado se construye entre todos: personal de salud y usuarios.”</p>
+        <p>“El trato humanizado se construye entre todos: personal de salud y usuarios”.</p>
         <span>E.S.E. Hospital Universitario Erasmo Meoz • UFPS Enfermería</span>
       </div>
     </div>
